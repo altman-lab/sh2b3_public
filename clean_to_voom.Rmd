@@ -1,0 +1,464 @@
+---
+title: "clean_voom.Rmd"
+output: html_document
+date: "2023-05-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Clean to Voom
+
+### Load libraries
+
+```{r load_libs, echo=FALSE, message=FALSE}
+
+library(tidyverse)
+library(BIGpicture)
+library(kimma)
+library(RNAetc)
+library(SEARchways)
+library(scales)
+library(sva)
+library(ggrepel)
+library(patchwork)
+library(limma)
+library(edgeR)
+library(readr)
+library(factoextra)
+library(FactoMineR)
+library(biomaRt)
+
+set.seed(101)
+
+```
+
+### Create output directories
+
+```{r create_out_dirs}
+
+# create output directories
+
+dir.create("data_clean", showWarnings = FALSE)
+dir.create("figures", showWarnings = FALSE)
+dir.create("figures/clean_to_voom_figs", showWarnings = FALSE)
+
+```
+
+### Load Data
+
+```{r load_dat, warning=FALSE, message=FALSE}
+
+flagstat <- readr::read_tsv('dat_raw/combined_flagstat.tsv')
+picard <- readr::read_tsv('dat_raw/combined_picard.tsv')
+counts <- readr::read_tsv('dat_raw/combined_feature_counts.tsv')
+exp1_sample_key <- readr::read_csv('dat_raw/exp1_samplekey.csv') # experiment 1 sample key
+exp2_sample_key <- readr::read_csv('dat_raw/exp2_samplekey.csv') # experiment 2 sample key
+
+# create first combined meta dat obj
+flag.pic.combine <- dplyr::left_join(flagstat, picard)
+meta1 <- flag.pic.combine %>%
+  arrange(desc(libID))
+
+```
+
+### Visualize unfiltered data
+
+```{r viz_raw_dat, message=FALSE}
+
+seq.cutoff <- 1e6
+cv.cutoff <- 1
+align.cutoff <- 75
+  
+raw_dat_hist <- ggplot(meta1, aes(x = reorder(libID, QC_pass), y = QC_pass)) +
+  geom_col() +
+  geom_hline(yintercept = seq.cutoff) +
+  scale_y_continuous(trans = 'log10',
+    breaks = trans_breaks("log10", function(x) 10^x),
+    labels = trans_format("log10", math_format(10^.x))) +
+  scale_x_discrete(expand=c(0,0)) +
+  theme_classic() +
+  labs(x = "Library", y = "Pass-filter sequences (log scale)") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+raw_dat_hist
+
+ggsave(raw_dat_hist, file = "figures/clean_to_voom_figs/raw_data_histogram.png")
+
+```
+
+### Visualize CV Coverage
+
+```{r visualize_CV_coverage, message=FALSE, echo=TRUE}
+
+# set x axis max to the larger of 1 or the highest data value
+
+cv.max <- max(1, max(meta1$MEDIAN_CV_COVERAGE))
+
+# cutoffs to label with LibID
+cv.cutoff.label <- 0.9
+align.cutoff.label <- 75
+
+cv_coverage_plot <- ggplot(flag.pic.combine, aes(x = MEDIAN_CV_COVERAGE, y = paired_mapped/QC_pass*100)) +
+  geom_point() +
+  lims(x = c(0, cv.max), y = c(0,100)) +
+  geom_hline(yintercept = align.cutoff, lty="dashed") +
+  geom_vline(xintercept = cv.cutoff, lty="dashed") +
+  geom_text_repel(data = filter(flag.pic.combine, MEDIAN_CV_COVERAGE   > cv.cutoff.label | paired_mapped/QC_pass*100 < align.cutoff.label),
+                  aes(label=libID), show.legend = FALSE, max.overlaps = Inf, box.padding = 1) +
+  theme_classic() +
+  labs(x = "Median CV coverage", y = "Percent alignment")
+
+cv_coverage_plot
+
+ggsave(cv_coverage_plot, file = "figures/clean_to_voom_figs/cv_coverage.png")
+
+```
+
+### Check filtering required
+
+```{r filter_check}
+
+meta1.filter <- meta1 %>%
+  filter(MEDIAN_CV_COVERAGE < cv.cutoff & 
+           QC_pass > seq.cutoff &
+           paired_mapped/QC_pass*100 > align.cutoff)
+
+count.filter <- counts %>%
+  dplyr::select(1, all_of(meta1.filter$libID))
+
+# check difference between dfs
+dplyr::all_equal(counts, count.filter)
+
+# No additional filtering required
+
+```
+
+### Filter non protein coding genes
+
+```{r filter_non_protein_genes_noRun, eval = FALSE, echo = FALSE}
+
+# new biomaRt version does not reproduce same results from earlier analysis, for this reason we keep and reload the former ensembl object
+
+mouse.ensembl <- biomaRt::useEnsembl(biomart="ensembl",
+                               dataset="mmusculus_gene_ensembl",
+                               mirror = "useast")
+
+# format gene key
+ensembl.key <- biomaRt::getBM(attributes=c("ensembl_gene_id", 
+                                   "entrezgene_id", 
+                                   "mgi_symbol", 
+                                   "gene_biotype", 
+                                   "chromosome_name",
+                                   "start_position", "end_position"), mart=mouse.ensembl) %>% 
+  filter(gene_biotype == "protein_coding")
+
+```
+
+```{r filter_non_protein_genes}
+
+# get ensembl db MOUSE
+
+# load ensembl key object from earlier analysis 12.19.2022
+
+ensembl.key.12.19.2022 <- read.csv("data_clean/ensembl_key_12_19_2022.csv") 
+ensembl.key.12.19.2022 <- ensembl.key.12.19.2022[-1] # remove "X" column from loading
+
+# filter protein coding genes in counts table
+
+ensembl.key.filter <- ensembl.key.12.19.2022 %>%
+  filter(ensembl_gene_id %in% counts$Geneid) %>%
+  group_by(ensembl_gene_id, mgi_symbol, gene_biotype, chromosome_name, start_position, end_position) %>%
+  summarise(entrezgene_id = list(unique(entrezgene_id)), .groups = "drop") %>%
+  group_by(ensembl_gene_id, entrezgene_id, gene_biotype, chromosome_name, start_position, end_position) %>%
+  summarise(symbol = list(unique(mgi_symbol)), .groups = "drop")
+
+# filter counts df to genes in protein coding key
+counts.filter.pc <- count.filter %>%
+  filter(Geneid %in% ensembl.key.filter$ensembl_gene_id)
+
+```
+
+### Merge Experiment Sample Keys w/ Meta data
+
+```{r sample_keys, message = FALSE}
+
+exp1_sample_key <- exp1_sample_key %>%
+  cbind(Expt = NA)
+
+exp2_sample_key <- exp2_sample_key %>%
+  mutate(Batch = "B") %>%
+  relocate(Batch, .before = Expt)
+
+# merge sample keys with meta df
+
+meta.batches.AB <- rbind(exp1_sample_key, exp2_sample_key)
+meta2.filtered <- left_join(meta1.filter, meta.batches.AB)
+
+```
+
+### Visaulize Batch Effects
+
+```{r batch_effect_pca, message = FALSE}
+
+# PCA to ID batch effects
+
+# PCA on experiment 1 and 2
+pca_batch <- BIGpicture::plot_pca(counts.filter.pc, 
+                     meta = meta2.filtered,
+                     vars = "Batch", 
+                     transform_logCPM = TRUE)
+
+pca_batch$Batch
+
+ggsave(pca_batch$Batch, file = "figures/clean_to_voom_figs/pca_batch.png")
+
+# PCA on genotype (WT v KO)
+pca_geno <- BIGpicture::plot_pca(counts.filter.pc, 
+                     meta = meta2.filtered,
+                     vars = "Genotype", 
+                     transform_logCPM = TRUE)
+
+pca_geno$Genotype
+
+ggsave(pca_geno$Genotype, file = "figures/clean_to_voom_figs/pca_genotype.png")
+
+# PCA on Time/Condition
+pca_time <- BIGpicture::plot_pca(counts.filter.pc, 
+                     meta = meta2.filtered,
+                     vars = "Time", 
+                     transform_logCPM = TRUE)
+
+ggsave(pca_time$Time, file = "figures/clean_to_voom_figs/pca_time.png")
+
+pca_time$Time
+
+```
+
+### Identify Batch Effect in Experiment 2
+
+```{r ID_batch_effect, message=FALSE}
+
+# Batch effect in cohorts Experiment 2
+# mutate sample key B (exp 2) Batch --> Experiment; Experiment --> Batch
+
+exp2_sample_key_adjusted <- exp2_sample_key
+names(exp2_sample_key_adjusted)[5] <- "Expt"
+names(exp2_sample_key_adjusted)[6] <- "Batch"
+
+meta.exp2 <- left_join(meta1.filter, exp2_sample_key_adjusted) %>%
+  drop_na(Batch) %>%
+  mutate(Batch = as.factor(Batch))
+
+meta.exp2.libIDs <- meta.exp2$libID
+
+counts.for.exp2 <- counts.filter.pc[,
+                 names(counts.filter.pc)[names(counts.filter.pc) %in% meta.exp2.libIDs]
+]
+
+pca_exp2_geno <- BIGpicture::plot_pca(counts.for.exp2, 
+                     meta = meta.exp2,
+                     vars = "Genotype", 
+                     transform_logCPM = TRUE)
+
+pca_exp2_geno$Genotype
+
+ggsave(pca_exp2_geno$Genotype, file = "figures/clean_to_voom_figs/pca_exp2_geno.png")
+
+
+### just 0hr
+meta.exp2.0hr <- meta.exp2 %>%
+  filter(Time == "0hr")
+
+exp2.0hr.libID <- meta.exp2.0hr$libID
+
+exp2.0hr.counts <- counts.filter.pc[,
+                 names(counts.filter.pc)[names(counts.filter.pc) %in% exp2.0hr.libID]
+]
+
+pca_exp2_exp <- BIGpicture::plot_pca(exp2.0hr.counts, 
+                     meta = meta.exp2.0hr,
+                     vars = "Batch", 
+                     transform_logCPM = TRUE)
+
+pca_exp2_exp$Batch
+
+ggsave(pca_exp2_exp$Batch, file = "figures/clean_to_voom_figs/pca_0hrexp2_exp.png") 
+
+### just 24hr
+meta.exp2.24hr <- meta.exp2 %>%
+  filter(Time == "24hr")
+
+exp2.24hr.libID <- meta.exp2.24hr$libID
+
+exp2.24hr.counts <- counts.filter.pc[,
+                 names(counts.filter.pc)[names(counts.filter.pc) %in% exp2.24hr.libID]
+]
+
+pca_24hrexp2_exp <- BIGpicture::plot_pca(exp2.24hr.counts, 
+                     meta = meta.exp2.24hr,
+                     vars = "Batch", 
+                     transform_logCPM = TRUE)
+
+pca_24hrexp2_exp$Batch
+
+ggsave(pca_24hrexp2_exp$Batch, file = "figures/clean_to_voom_figs/pca_24hrexp2_exp.png")
+
+### 0hr and 24hr
+meta.exp2.024hr <- meta.exp2 %>%
+  filter(Time %in% c("0hr", "24hr"))
+
+meta.exp2.024hr.libID <- meta.exp2.024hr$libID
+
+exp2.024hr.counts <- counts.filter.pc[,
+                 names(counts.filter.pc)[names(counts.filter.pc) %in% meta.exp2.024hr.libID]
+]
+
+pca_0hr24hrexp2_exp <- BIGpicture::plot_pca(exp2.024hr.counts, 
+                     meta = meta.exp2.024hr,
+                     vars = "Batch", 
+                     transform_logCPM = TRUE)
+
+pca_0hr24hrexp2_exp$Batch
+
+ggsave(pca_0hr24hrexp2_exp$Batch, file = "figures/clean_to_voom_figs/pca_0hr_24hr_exp2_exp.png")
+
+```
+
+### Combat Seq
+
+```{r bc_combat_seq, warning=FALSE, message=FALSE}
+
+# ID duplicate libs
+
+unique.ID <- c("libID", "Genotype")
+
+dups <- meta2.filtered %>%
+  unite("dupID", all_of(unique.ID), remove=FALSE) %>%
+  count(dupID) %>%
+  filter(n > 1)
+
+# no duplicates
+
+# create duplicated ID var
+meta2.filtered.dups <- meta2.filtered %>%
+  unite("dupID", unique.ID, remove = FALSE) %>%
+  mutate(duplicate = ifelse(dupID %in% dups$dupID, dupID, NA))
+
+counts.filter.pc.combat <- counts.filter.pc %>%
+  column_to_rownames("Geneid") %>% #transpose
+  as.matrix() %>%
+  # batch correction
+  sva::ComBat_seq(., batch = meta2.filtered$Batch,
+                  group = meta2.filtered$Genotype,
+                  covar_mod = model.matrix(~ Time, meta2.filtered)) %>%
+  as.data.frame()
+
+batch_corrected_pca <- BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered,
+                     vars = c("Time","Batch"),
+                     transform_logCPM = TRUE) %>%
+  wrap_plots(ncol = 2)
+
+batch_corrected_pca
+
+```
+
+### Check PCA Outliers
+
+```{r pca_outliers, message=FALSE}
+
+BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered, vars = "outlier", transform_logCPM = TRUE, outlier_sd = 2)
+
+```
+
+### Filter duplicate libraries
+
+```{r filter_dup_libs, message=FALSE}
+
+meta.filter.out.dedup <- meta2.filtered %>%
+  group_by_at(unique.ID) %>%
+  slice_max(order_by = QC_pass)
+
+count.filter.pc.combat.out.dedup <- counts.filter.pc.combat %>%
+  dplyr::select(1, all_of(meta.filter.out.dedup$libID))
+
+```
+
+### Create DEG List
+
+```{r deg_list}
+
+meta.filter.out.dedup.ord <- meta.filter.out.dedup %>%
+  arrange(libID)
+
+count.filter.pc.combat.out.dedup.ord <- count.filter.pc.combat.out.dedup %>%
+  dplyr::select(1, all_of(meta.filter.out.dedup.ord$libID))
+
+count.filter.pc.combat.out.dedup.ord2 <- count.filter.pc.combat.out.dedup.ord %>%
+  relocate(IL28, .after = last_col())
+
+identical(meta.filter.out.dedup.ord$libID,
+          colnames(count.filter.pc.combat.out.dedup.ord2)) # TRUE
+
+dat <- DGEList(
+  counts = as.matrix(count.filter.pc.combat.out.dedup.ord2[ order(row.names(count.filter.pc.combat.out.dedup.ord2)),]),
+  samples = meta.filter.out.dedup.ord,
+  genes = ensembl.key.filter
+)
+
+```
+
+### Filter Low Abundance Genes
+
+```{r filter_low_abundance, message=FALSE}
+
+BIGpicture::plot_mv(dat, design = "~ Genotype")
+BIGpicture::plot_mv(dat, design = "~ Time")
+
+dat.abund <- RNAetc::filter_rare(dat, min.CPM = 0.1, min.sample = 3, gene.var = "ensembl_gene_id")
+
+voom_mv_plot <- BIGpicture::plot_mv(dat.abund, design = "~ Time")
+
+ggsave(voom_mv_plot, file = "figures/voom_mv_plot.png")
+
+```
+
+### Normalize data
+
+```{r normalize}
+
+dat.abund.norm <- calcNormFactors(dat.abund, method = "TMM")
+
+```
+
+### Run Voom
+
+```{r voom, message=FALSE}
+
+dat.abund.norm.voom <- voomWithQualityWeights(
+                           dat.abund.norm,
+                           design=model.matrix(~ Time, data=dat.abund.norm$samples),
+                           plot=TRUE)
+
+# voom pca
+
+plot_pca(dat.abund.norm.voom, vars = c("Time", "Genotype", "Batch", "outlier")) %>%
+  wrap_plots(ncol = 2)
+
+```
+
+### Save Data
+
+```{r save_dat}
+
+save(dat.abund.norm, file = "data_clean/dat2.RData")
+save(dat.abund.norm.voom, file = "data_clean/voom2.RData")
+
+```
+
+```{r session_info}
+
+sessionInfo()
+
+```
