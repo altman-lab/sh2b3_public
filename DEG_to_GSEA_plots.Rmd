@@ -1,7 +1,14 @@
 ---
-title: "DEG_to_enrichment_and_plots.Rmd"
-output: html_document
-date: "2023-05-17"
+title: "Enrichment and gene set analyses"
+author: "Dane Grosvenor"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -12,27 +19,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Load Libraries
 
-```{r load_libs, message=FALSE}
+```{r load_libs, message=FALSE, warning=FALSE}
 
 library(tidyverse)
-library(edgeR)
 library(limma)
-library(patchwork)
-library(BIGpicture)
-library(kimma)
-library(RNAetc)
 library(SEARchways)
-library(pheatmap)
-library(gplots)
-library(heatmaply)
-library(BiocManager)
 library(ComplexHeatmap)
-library(dendextend)
-library(enrichR)
-library(VennDiagram)
-library(RColorBrewer)
-library(openxlsx)
-library(viridis)
 
 set.seed(101)
 
@@ -47,7 +39,7 @@ dir.create("figures/boxplots", showWarnings = FALSE)
 dir.create("figures/boxplots/exp1", showWarnings = FALSE)
 dir.create("figures/boxplots/exp2", showWarnings = FALSE)
 dir.create("figures/bubbleplots", showWarnings = FALSE)
-dir.create("data_clean/enrichment_out", showWarnings = FALSE)
+dir.create("results/enrichment_outputs", showWarnings = FALSE)
 
 ```
 
@@ -62,8 +54,8 @@ loadRData <- function(fileName) {
 }
 
 # load exp1.lme and exp2.lme
-exp1.lme <- loadRData("lme_outputs/experiment1_lme.RData")
-exp2.lme <- loadRData("lme_outputs/experiment2_lme.RData")
+exp1.lme <- loadRData("results/lme_outputs/experiment1_lme.RData")
+exp2.lme <- loadRData("results/lme_outputs/experiment2_lme.RData")
 
 # load exp1 and exp2 voom objects
 voom.exp1 <- loadRData("data_clean/voom_exp1.RData")
@@ -189,37 +181,25 @@ exp1_sig_genes <- exp1.lme$lme %>%
   filter(gene %in% exp1_contrast_filters) %>%
   pull(gene)
 
-# get genes from exp1
-
-genotype_time_sample_name_exp1 <- as.list(paste(voom.exp1$targets$Genotype,
-                                          voom.exp1$targets$Time,
-                                          voom.exp1$targets$Animal))
-
-exp1.E <- as.data.frame(voom.exp1$E)
-colnames(exp1.E) <- c(genotype_time_sample_name_exp1)
-
-# get counts data and order it for scaling before heat map
-
-exp1_sig_gene_counts <- exp1.E %>%
-  filter(rownames(.) %in% exp1_sig_genes)
-
-exp1.counts.ordered <- as.data.frame(exp1_sig_gene_counts) %>%
-  rownames_to_column("ensembl_gene_id") %>%
-  pivot_longer(-ensembl_gene_id) %>%
-  inner_join(voom.exp1$genes) %>%
-  dplyr::select(name, value, symbol) %>%
-  arrange(name) %>%
-  group_by(name) %>%
-  mutate(row = row_number()) %>%
-  pivot_wider(names_from = name, values_from = value) %>%
-  dplyr::select(-row) %>%
-  ungroup() %>%
-  unnest(symbol) %>%
-  distinct(symbol, .keep_all = TRUE) %>% 
+#Format exp1 for heatmap
+exp1.E <- as.data.frame(voom.exp1$E) %>% 
+  rownames_to_column() %>% 
+  #Rename libraries
+  pivot_longer(-rowname, names_to = "libID") %>% 
+  left_join(voom.exp1$targets %>% select(libID, Genotype, Time, Animal)) %>% 
+  mutate(name = paste(Genotype, Time, Animal)) %>% 
+  dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
+  pivot_wider() %>% 
+  #Filter to significant genes
+  filter(rowname %in% exp1_sig_genes) %>% 
+  #Rename genes to symbols
+  left_join(voom.exp1$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  unnest(symbol) %>% 
+  select(-rowname) %>% 
   column_to_rownames("symbol") %>%
   as.matrix()
 
-exp1.counts.scaled <- t(scale(t(exp1.counts.ordered)))
+exp1.counts.scaled <- t(scale(t(exp1.E)))
 
 # k = 6 clust dendrogram
 
@@ -236,12 +216,11 @@ exp1.counts.scaled <- as.data.frame(exp1.counts.scaled) %>%
   as.matrix()
 
 # top bar annotation
+anno_groups <- str_split(colnames(exp1.counts.scaled), pattern = " ")
 
 ha = ComplexHeatmap::HeatmapAnnotation(
-  Genotype = c(rep("WT", 15), rep("KO", 15)),
-  Time = c(rep("0hr", 5), rep("2hr", 5), rep("6hr", 5), 
-           rep("0hr", 5), rep("2hr", 5), rep("6hr", 5)),
-  
+  Genotype = sapply(anno_groups,"[[",1),
+  Time = sapply(anno_groups,"[[",2),
   col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
              Time = c("0hr" = "#994F00", "2hr" = "#006CD1", "6hr" = "#E1BE6A"))
 )
@@ -285,31 +264,25 @@ exp2_sig_genes <- exp2.lme$lme %>%
   filter(gene %in% exp2_contrast_filter_24hr) %>%
   pull(gene)
 
-genotype_time_sample_name_exp2 <-
-  as.list(paste(voom.exp2$targets$Genotype,
-                voom.exp2$targets$Time,
-                voom.exp2$targets$Animal))
-
-exp2.E <- as.data.frame(voom.exp2$E)
-colnames(exp2.E) <- c(genotype_time_sample_name_exp2)
-
-exp2_sig_genes_counts <- exp2.E %>%
-  filter(rownames(.) %in% exp2_sig_genes) %>%
-  as.matrix()
-
-exp2_counts_ordered <- 
-  as.data.frame(exp2_sig_genes_counts) %>%
-  rownames_to_column("ensembl_gene_id") %>%
-  pivot_longer(-ensembl_gene_id) %>%
-  inner_join(voom.exp2$genes) %>%
-  dplyr::select(name, value, symbol) %>%
-  arrange(name) %>%
-  pivot_wider() %>%
-  unnest(symbol) %>%
+#Format exp1 for heatmap
+exp2.E <- as.data.frame(voom.exp2$E) %>% 
+  rownames_to_column() %>% 
+  #Rename libraries
+  pivot_longer(-rowname, names_to = "libID") %>% 
+  left_join(voom.exp2$targets %>% select(libID, Genotype, Time, Animal)) %>% 
+  mutate(name = paste(Genotype, Time, Animal)) %>% 
+  dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
+  pivot_wider() %>% 
+  #Filter to significant genes
+  filter(rowname %in% exp1_sig_genes) %>% 
+  #Rename genes to symbols
+  left_join(voom.exp2$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  unnest(symbol) %>% 
+  select(-rowname) %>% 
   column_to_rownames("symbol") %>%
   as.matrix()
-                
-exp2_counts_scaled <- t(scale(t(exp2_counts_ordered)))
+
+exp2_counts_scaled <- t(scale(t(exp2.E)))
 
 exp2_row_dend <- exp2_counts_scaled %>%
   dist() %>%
@@ -323,12 +296,11 @@ exp2_counts_scaled <- as.data.frame(exp2_counts_scaled) %>%
   as.matrix()
 
 # top bar annotation
+anno_groups2 <- str_split(colnames(exp2_counts_scaled), pattern = " ")
 
-ha2 = HeatmapAnnotation(
-  Genotype = c(rep("WT", 11), rep("KO", 11)),
-  `Time/Condition` = c(rep("0hr", 4), rep("24hr", 3), rep("24hr+antiIL2", 4), 
-           rep("0hr", 4), rep("24hr", 3), rep("24hr+antiIL2", 4)),
-  
+ha2 = ComplexHeatmap::HeatmapAnnotation(
+  Genotype = sapply(anno_groups2,"[[",1),
+  `Time/Condition` = sapply(anno_groups2,"[[",2),
   col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
              `Time/Condition` = c("0hr" = "#994F00", "24hr" = "#006CD1", "24hr+antiIL2" = "#E1BE6A"))
 )
@@ -362,7 +334,7 @@ get_hm_cl_exp1 <- get_hm_clust(dat = exp1.counts.scaled,
                hm = draw(experiment_1_heatmap), 
                dimension = "row")
 
-write_csv(get_hm_cl_exp1, file = "data_clean/exp1_genes_per_cluster.csv")
+write_csv(get_hm_cl_exp1, file = "figures/heatmaps/exp1_genes_per_cluster.csv")
 
 ```
 
@@ -372,7 +344,7 @@ get_hm_cl_exp2 <- get_hm_clust(dat = exp2_counts_scaled,
                hm = draw(experiment_2_heatmap), 
                dimension = "row")
 
-write_csv(get_hm_cl_exp2, file = "data_clean/exp2_genes_per_cluster.csv")
+write_csv(get_hm_cl_exp2, file = "figures/heatmaps/exp2_genes_per_cluster.csv")
 
 ```
 
@@ -388,20 +360,17 @@ exp1_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp1$row),
                         category = "C5",
                         subcategory = "GO:BP")
 
-exp1_GO <- exp1_GO %>%
-  filter(FDR < 0.50)
-
 exp1_Hallmark <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp1$row),
                         ID = "SYMBOL",
                         species = "mouse",
                         category = "H")
 
-save(exp1_Hallmark, file = "data_clean/enrichment_out/exp1_GO_enr.csv")
-
-exp1_Hallmark <- exp1_Hallmark %>%
-  filter(FDR < 0.50)
-
-save(exp1_Hallmark, file = "data_clean/enrichment_out/exp1_Hallmark_enr.csv")
+exp1_GO %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp1_GO_enr.csv")
+exp1_Hallmark %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp1_Hallmark_enr.csv")
 
 ```
 
@@ -415,20 +384,17 @@ exp2_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$row),
                         category = "C5",
                         subcategory = "GO:BP")
 
-exp2_GO <- exp2_GO %>%
-  filter(FDR < 0.50)
-
-save(exp2_GO, file = "data_clean/enrichment_out/exp2_GO_enr.csv")
-
 exp2_Hallmark <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$row),
                         ID = "SYMBOL",
                         species = "mouse",
                         category = "H")
 
-exp2_Hallmark <- exp2_Hallmark %>%
-  filter(FDR < 0.50)
-
-save(exp2_Hallmark, file = "data_clean/enrichment_out/exp2_Hallmark_enr.csv")
+exp2_GO %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp2_GO_enr.csv")
+exp2_Hallmark %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp2_Hallmark_enr.csv")
 
 ```
 
@@ -441,144 +407,83 @@ save(exp2_Hallmark, file = "data_clean/enrichment_out/exp2_Hallmark_enr.csv")
 exp2_H_enr_df <- exp2_Hallmark %>%
   mutate(pathway = gsub('HALLMARK_', '', pathway)) %>%
   mutate(pathway = gsub('_', ' ', pathway)) %>%
-  filter(group_in_pathway > 5)
+  filter(group_in_pathway > 5 & FDR < 0.5)
 
-### reference FC is KO vs WT, FC title change positive = down, negative = up
+### reference FC is WT minus KO, FC title change positive = down, negative = up
 
-# 0hr positive FC
+# 0hr DOWN in KO
+bp_0hr_dn <- exp2.lme$lme.contrast %>%
+  filter(FDR < 0.25) %>%
+  filter(contrast_ref == "0hr KO") %>%
+  filter(contrast_lvl == "0hr WT") %>%
+  filter(estimate > 0) %>%
+  pull(unique(gene))
+
+# 0hr UP in KO
 bp_0hr_up <- exp2.lme$lme.contrast %>%
   filter(FDR < 0.25) %>%
   filter(contrast_ref == "0hr KO") %>%
   filter(contrast_lvl == "0hr WT") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
-
-bp_0hr_up_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_0hr_up),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
-
-bp_0hr_up_enr_out <- bp_0hr_up_enr %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "0hr DOWN")
-
-# negative FC
-
-bp_0hr_down <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "0hr KO") %>%
-  filter(contrast_lvl == "0hr WT") %>%
   filter(estimate < 0) %>%
   pull(unique(gene))
 
-bp_0hr_down_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_0hr_down),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
-
-bp_0hr_down_enr_out <- bp_0hr_down_enr %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "0hr UP")
-
 ### 24hr KO v 24hr WT
-
-# positive FC
+# 24hr UP in KO
+bp_24hr_dn <- exp2.lme$lme.contrast %>%
+  filter(FDR < 0.25) %>%
+  filter(contrast_ref == "24hr KO") %>%
+  filter(contrast_lvl == "24hr WT") %>%
+  filter(estimate > 0) %>%
+  pull(unique(gene))
+       
+# 24hr UP in KO
 bp_24hr_up <- exp2.lme$lme.contrast %>%
   filter(FDR < 0.25) %>%
   filter(contrast_ref == "24hr KO") %>%
   filter(contrast_lvl == "24hr WT") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
-
-bp_24hr_up_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_24hr_up),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
-
-bp_24hr_up_enr_out <- bp_24hr_up_enr %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "24hr DOWN")
-
-# negative FC
-
-bp_24hr_down <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "24hr KO") %>%
-  filter(contrast_lvl == "24hr WT") %>%
   filter(estimate < 0) %>%
   pull(unique(gene))
 
-bp_24hr_down_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_24hr_down),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
-
-bp_24hr_down_enr_out <- bp_24hr_down_enr %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "24hr UP")
-
 ### 24hr+anti-IL2 KO v 24hr+anti-IL2 WT
-
-# positive FC
+# 24hr+anti-IL2 UP in KO
 bp_24hrIL2_up <- exp2.lme$lme.contrast %>%
   filter(FDR < 0.25) %>%
   filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
   filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
-
-bp_24hrIL2_up_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_24hrIL2_up),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
-
-bp_24hrIL2_up_enr_out <- bp_24hrIL2_up_enr %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "24hr+anti-IL2 DOWN")
-
-# negative FC
-
-bp_24hrIL2_down <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
-  filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
   filter(estimate < 0) %>%
   pull(unique(gene))
 
-bp_24hrIL2_down_enr <- SEARchways::BIGprofiler(gene_list = list(int = bp_24hrIL2_down),
-            ID = "ENSEMBL",
-            species = "mouse",
-            category = "H")
+# 24hr+anti-IL2 DOWN in KO
+bp_24hrIL2_dn <- exp2.lme$lme.contrast %>%
+  filter(FDR < 0.25) %>%
+  filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
+  filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
+  filter(estimate > 0) %>%
+  pull(unique(gene))
 
-bp_24hrIL2_down_enr_out <- bp_24hrIL2_down_enr %>%
+#Run enrichment
+enr_all <- SEARchways::BIGprofiler(
+  gene_list = list("0hr DOWN" = bp_0hr_dn,
+                   "0hr UP" = bp_0hr_up,
+                   "24hr DOWN" = bp_24hr_dn,
+                   "24hr UP" = bp_24hr_up,
+                   "24hr+anti-IL2 DOWN" = bp_24hrIL2_dn,
+                   "24hr+anti-IL2 UP" = bp_24hrIL2_up),
+  ID = "ENSEMBL",
+  species = "mouse",
+  category = "H")
+
+exp2_enr_bp_df <- enr_all %>%
   filter(group_in_pathway > 5) %>%
   filter(FDR < 0.25) %>%
+  #24 hr contrasts only
+  filter(group %in% c("24hr DOWN", "24hr UP", 
+                      "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")) %>% 
   mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>%
-  mutate(contrast = "24hr+anti-IL2 UP")
-
-exp2_enr_bp_df <- rbind(
-      bp_24hr_up_enr_out,
-      bp_24hr_down_enr_out,
-      bp_24hrIL2_up_enr_out,
-      bp_24hrIL2_down_enr_out) %>%
-  mutate(contrast = factor(contrast, 
-                           levels = c("24hr DOWN", "24hr UP", "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")))
+  mutate(pathway = gsub("_", " ", pathway)) %>% 
+  mutate(contrast = factor(group, 
+                         levels = c("24hr DOWN", "24hr UP", 
+                                      "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")))
 
 # negative log 10 for scale
 
@@ -596,7 +501,7 @@ exp2_bubble_plot <- ggplot(exp2_enr_bp_df, aes(y = pathway, x = contrast, size =
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   labs(size='# genes per pathway')
 
-save(exp2_enr_bp_df, file = "data_clean/enrichment_out/exp2_enr_bp_df.RData")
+save(enr_all, file = "results/enrichment_outputs/exp2_enr_all.RData")
 
 ggsave("figures/bubbleplots/exp2_enr_bubbleplot.pdf", exp2_bubble_plot,
        width = 12)
@@ -609,9 +514,9 @@ exp2_bubble_plot
 
 ### Experiment 1 all genes
 
-```{r exp1_all_bps, message=FALSE}
+```{r exp1_all_bps, message=FALSE, eval=FALSE}
 
-exp1_gene_counts <- as.data.frame(exp1.counts.ordered) %>%
+exp1_gene_counts <- as.data.frame(exp1.E) %>%
   rownames_to_column("gene_symbol") %>%
   pivot_longer(-gene_symbol) %>%
   dplyr::select(gene_symbol, name, value) %>%
@@ -650,9 +555,9 @@ for (gene in seq_along(uniq_gene_exp1)) {
 
 ### Experiment 2 all genes
 
-```{r exp2_all_bps, message=FALSE}
+```{r exp2_all_bps, message=FALSE, eval=FALSE}
 
-exp2_gene_counts <- as.data.frame(exp2_counts_ordered) %>%
+exp2_gene_counts <- as.data.frame(exp2.E) %>%
   rownames_to_column("gene_symbol") %>%
   pivot_longer(-gene_symbol) %>%
   select(gene_symbol, name, value) %>%
@@ -695,8 +600,4 @@ for (gene in seq_along(uniq_gene_exp2)) {
 sessionInfo()
 
 ```
-
-
-
-
 
