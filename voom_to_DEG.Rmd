@@ -1,7 +1,14 @@
 ---
-title: "voom_to_DEG.Rmd"
-output: html_document
-date: "2023-05-17"
+title: "Differential gene expression analysis"
+author: "Dane Grosvenor"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -12,25 +19,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Load libraries
 
-```{r load_libs, message=FALSE}
+```{r load_libs, message=FALSE, warning=FALSE}
 
 library(tidyverse)
 library(edgeR)
 library(limma)
-library(patchwork)
-library(BIGpicture)
 library(kimma)
-library(RNAetc)
-library(SEARchways)
-library(pheatmap)
-library(gplots)
-library(heatmaply)
-library(BiocManager)
-library(ComplexHeatmap)
-library(dendextend)
-library(enrichR)
-library(VennDiagram)
-library(RColorBrewer)
 
 set.seed(101)
 
@@ -40,9 +34,7 @@ set.seed(101)
 
 ```{r create_out_dirs, message=FALSE}
 
-dir.create("lme_outputs", showWarnings = FALSE)
-dir.create("figures/lme_figs", showWarnings = FALSE)
-
+dir.create("results/lme_outputs/", showWarnings = FALSE, recursive = TRUE)
 ```
 
 ### Load Voom Object
@@ -69,11 +61,17 @@ voom.obj$targets <- voom.obj$targets %>%
 
 ```
 
+```{r include=FALSE}
+# Load model results
+load("results/lme_outputs/experiment1_lme.RData")
+load("results/lme_outputs/experiment2_lme.RData")
+```
+
 ### Create ensembl ID Gene symbol dictionary
 
 ```{r ensembl_symbol_dict, message=FALSE}
 
-gene_ID_symbol_dict <- voom.obj$genes %>%
+voom.obj$genes <- voom.obj$genes %>%
   dplyr::select(ensembl_gene_id, symbol) %>% # create ensembl:symbol dict
   unnest(symbol) %>%
   # for ensembl IDs w/o associated gene symbols, write ensembl ID as gene symbol
@@ -89,7 +87,7 @@ gene_ID_symbol_dict <- voom.obj$genes %>%
                             TRUE ~ symbol)))
 
 # single object, use saveRDS()
-saveRDS(gene_ID_symbol_dict, 
+saveRDS(voom.obj$genes, 
      file = "data_clean/ensembl_ID_gene_symbol_dict.rds")
 
 ```
@@ -103,45 +101,24 @@ saveRDS(gene_ID_symbol_dict,
 # set experiment 1 as own object for downstream subset
 voom.exp1 <- voom.obj
 
-# filter experiment 1 (Batch == A) and corresponding time pts
+# filter experiment 1 (Expt == A) and corresponding time pts
 voom.exp1$targets <- voom.exp1$targets %>%
-  filter(Time %in% c("0hr", "2hr", "6hr")) %>%
-  filter(Batch == "A") %>%
+  filter(Expt == "A") %>%
   droplevels(.)
+subset_sample_names_exp1 <- voom.exp1$targets$ptID
 
-# change voom.exp1$weights colnames
-sample_names_exp1 <- list(colnames(voom.obj$E))
-colnames(voom.exp1$weights) <- c(unlist(sample_names_exp1))
+# add voom.exp1$weights colnames
+colnames(voom.exp1$weights) <- colnames(voom.exp1$E)
 
 # subset weight samples from target subset
-subset_sample_names_exp1 <- list(voom.exp1$targets$ptID)
-
 voom.exp1$weights <- as.data.frame(voom.exp1$weights) %>%
-  dplyr::select(c(unlist(subset_sample_names_exp1)))
-
-names(voom.exp1$weights) <- NULL
-voom.exp1$weights <- as.matrix((voom.exp1$weights))
+  dplyr::select(all_of(subset_sample_names_exp1)) %>% 
+  as.matrix()
 
 # subset voom.exp1$E from target subset
 voom.exp1$E <- as.data.frame(voom.exp1$E) %>%
-  dplyr::select(c(unlist(subset_sample_names_exp1)))
-
-voom.exp1$E <- voom.exp1$E %>%
+  dplyr::select(all_of(subset_sample_names_exp1)) %>%
   as.matrix()
-
-voom.exp1$genes <- voom.exp1$genes %>%
-  unnest(symbol) %>%
-  mutate(symbol = case_when(ensembl_gene_id == "ENSMUSG00000062783" ~ "Csprs",
-                            ensembl_gene_id == "ENSMUSG00000079190" ~ "ENSMUSG00000079190",
-                            ensembl_gene_id == "ENSMUSG00000079192" ~ "ENSMUSG00000079192",
-                            ensembl_gene_id == "ENSMUSG00000079222" ~ "ENSMUSG00000079222",
-                            ensembl_gene_id == "ENSMUSG00000079808" ~ "ENSMUSG00000079808",
-                            ensembl_gene_id == "ENSMUSG00000095041" ~ "ENSMUSG00000095041",
-                            ensembl_gene_id == "ENSMUSG00000095250" ~ "ENSMUSG00000095250",
-                            ensembl_gene_id == "ENSMUSG00000095672" ~ "ENSMUSG00000095672",
-                            ensembl_gene_id == "ENSMUSG00000095742" ~ "ENSMUSG00000095742",
-                            TRUE ~ symbol)) %>%
-  mutate(symbol = as.list(symbol))
 
 save(voom.exp1, file = "data_clean/voom_exp1.RData")
 
@@ -151,78 +128,70 @@ save(voom.exp1, file = "data_clean/voom_exp1.RData")
 
 ```{r subset_exp2, message=FALSE}
 
-# set experiment 2 as its own object for downstream subset
+# set experiment 2 as own object for downstream subset
 voom.exp2 <- voom.obj
 
-# subset experiment 2
+# filter experiment 2 (Expt == B) and remove smaller batch
 voom.exp2$targets <- voom.exp2$targets %>%
-  filter(Expt > 1) %>%
+  filter(Expt == "B" & Batch == "2") %>%
   droplevels(.)
+subset_sample_names_exp2 <- voom.exp2$targets$ptID
 
-# change $weights colnames
-sample_names_exp2 <- list(colnames(voom.exp2$E))
-colnames(voom.exp2$weights) <- c(unlist(sample_names_exp2))
+# add voom.exp2$weights colnames
+colnames(voom.exp2$weights) <- colnames(voom.exp2$E)
 
 # subset weight samples from target subset
-subset_sample_names_exp2 <- list(voom.exp2$targets$ptID)
-
 voom.exp2$weights <- as.data.frame(voom.exp2$weights) %>%
-  dplyr::select(c(unlist(subset_sample_names_exp2)))
-
-names(voom.exp2$weights) <- NULL
-voom.exp2$weights <- as.matrix((voom.exp2$weights))
+  dplyr::select(all_of(subset_sample_names_exp2)) %>% 
+  as.matrix()
 
 # subset voom.exp2$E from target subset
 voom.exp2$E <- as.data.frame(voom.exp2$E) %>%
-  dplyr::select(c(unlist(subset_sample_names_exp2)))
-
-voom.exp2$E <- voom.exp2$E %>%
+  dplyr::select(all_of(subset_sample_names_exp2)) %>%
   as.matrix()
 
 save(voom.exp2, file = "data_clean/voom_exp2.RData")
-
 ```
 
 ## Linear Mixed Effect Models
 
 ### Experiment 1 LME (Time as Factor)
 
-```{r exp1_lme, message=FALSE}
+```{r exp1_lme, eval=FALSE}
 
-exp1.lme <- kimma::kmFit(dat = voom.exp1,
+exp1.lme <- kimma::kmFit(dat = voom.exp1, patientID = "Animal",
                       model = "~ Time*Genotype + (1|Animal)",
-                      contrast.var = "Time:Genotype",
-                      run.lme = TRUE,
-                      use.weights = TRUE,
-                      run.contrast = TRUE,
+                      contrast_var = "Time:Genotype",
+                      run_lme = TRUE,
+                      use_weights = TRUE,
+                      run_contrast = TRUE,
                       metrics = TRUE)
 
-save(exp1.lme, file = "lme_outputs/experiment1_lme.RData")
+save(exp1.lme, file = "results/lme_outputs/experiment1_lme.RData")
+```
 
+```{r}
 summarise_kmFit(exp1.lme$lme,
-                fdr.cutoff = c(0.05, 0.1, 0.25),
-                FCgroup = TRUE)
-
+                fdr.cutoff = c(0.05, 0.1, 0.25))
 ```
 
 ### Experiment 2 LME
 
-```{r exp2_lme, message=FALSE}
-
-exp2.lme <- kimma::kmFit(dat = voom.exp2,
+```{r exp2_lme, eval=FALSE}
+exp2.lme <- kimma::kmFit(dat = voom.exp2, patientID = "Animal",
                       model = "~ Time*Genotype + (1|Animal)",
-                      contrast.var = "Time:Genotype",
-                      run.lme = TRUE,
-                      use.weights = TRUE,
-                      run.contrast = TRUE,
+                      contrast_var = "Time:Genotype",
+                      run_lme = TRUE,
+                      use_weights = TRUE,
+                      run_contrast = TRUE,
                       metrics = TRUE)
 
-save(exp2.lme, file = "lme_outputs/experiment2_lme.RData")
+save(exp2.lme, file = "results/lme_outputs/experiment2_lme.RData")
+```
 
+```{r}
 summarise_kmFit(exp2.lme$lme,
-                fdr.cutoff = c(0.05, 0.1, 0.25),
-                FCgroup = TRUE)
-
+                fdr.cutoff = c(0.05, 0.1, 0.25))
 ```
 
 ### Session Info
