@@ -127,7 +127,7 @@ ggsave(cv_coverage_plot, file = "figures/clean_to_voom_figs/cv_coverage.png")
 ```{r filter_check}
 
 meta1.filter <- meta1 %>%
-  filter(MEDIAN_CV_COVERAGE < cv.cutoff & 
+  dplyr::filter(MEDIAN_CV_COVERAGE < cv.cutoff & 
            QC_pass > seq.cutoff &
            paired_mapped/QC_pass*100 > align.cutoff)
 
@@ -174,26 +174,28 @@ ensembl.key.12.19.2022 <- ensembl.key.12.19.2022[-1] # remove "X" column from lo
 # filter protein coding genes in counts table
 
 ensembl.key.filter <- ensembl.key.12.19.2022 %>%
-  filter(ensembl_gene_id %in% counts$Geneid) %>%
-  group_by(ensembl_gene_id, mgi_symbol, gene_biotype, chromosome_name, start_position, end_position) %>%
-  summarise(entrezgene_id = list(unique(entrezgene_id)), .groups = "drop") %>%
-  group_by(ensembl_gene_id, entrezgene_id, gene_biotype, chromosome_name, start_position, end_position) %>%
-  summarise(symbol = list(unique(mgi_symbol)), .groups = "drop")
+  dplyr::filter(ensembl_gene_id %in% counts$Geneid) %>%
+  dplyr::group_by(ensembl_gene_id, mgi_symbol, gene_biotype, chromosome_name, start_position, end_position) %>%
+  dplyr::summarise(entrezgene_id = list(unique(entrezgene_id)), .groups = "drop") %>%
+  dplyr::group_by(ensembl_gene_id, entrezgene_id, gene_biotype, chromosome_name, start_position, end_position) %>%
+  dplyr::summarise(symbol = list(unique(mgi_symbol)), .groups = "drop")
 
 # filter counts df to genes in protein coding key
 counts.filter.pc <- count.filter %>%
-  filter(Geneid %in% ensembl.key.filter$ensembl_gene_id)
+  dplyr::filter(Geneid %in% ensembl.key.filter$ensembl_gene_id)
 
 ```
 
 ### Merge Experiment Sample Keys w/ Meta data
 
 ```{r sample_keys, message = FALSE}
+
 # merge sample keys with meta df
 meta2.filtered <- bind_rows(exp1_sample_key, exp2_sample_key) %>% 
-  right_join(meta1.filter) %>% 
-  mutate(Batch = as.factor(Batch)) %>% 
-  arrange(libID)
+  dplyr::right_join(meta1.filter) %>% 
+  dplyr::mutate(Batch = as.factor(Batch)) %>% 
+  dplyr::arrange(libID)
+
 ```
 
 ### Visaulize Batch Effects
@@ -238,7 +240,7 @@ names(exp2_sample_key_adjusted)[5] <- "Expt"
 names(exp2_sample_key_adjusted)[6] <- "Batch"
 
 meta.exp2 <- meta2.filtered %>% 
-  filter(Expt=="B")
+  dplyr::filter(Expt=="B")
 
 meta.exp2.libIDs <- meta.exp2$libID
 
@@ -258,7 +260,7 @@ ggsave(pca_exp2_geno$Genotype, file = "figures/clean_to_voom_figs/pca_exp2_geno.
 
 ### just 0hr
 meta.exp2.0hr <- meta.exp2 %>%
-  filter(Time == "0hr")
+  dplyr::filter(Time == "0hr")
 
 exp2.0hr.libID <- meta.exp2.0hr$libID
 
@@ -292,7 +294,7 @@ ggsave(pca_24hrexp2_exp$Batch, file = "figures/clean_to_voom_figs/pca_24hrexp2_e
 
 ### 0hr and 24hr
 meta.exp2.024hr <- meta.exp2 %>%
-  filter(Time %in% c("0hr", "24hr"))
+  dplyr::filter(Time %in% c("0hr", "24hr"))
 
 meta.exp2.024hr.libID <- meta.exp2.024hr$libID
 
@@ -316,7 +318,7 @@ pca_0hr24hrexp2_exp$Batch + ggtitle("Experiment 2\nTime 0hr and 24hr")
 
 ```{r bc_combat_seq, warning=FALSE, message=FALSE}
 counts.filter.pc.combat <- counts.filter.pc %>%
-  column_to_rownames("Geneid") %>% #transpose
+  tibble::column_to_rownames("Geneid") %>% #transpose
   as.matrix() %>%
   # batch correction
   sva::ComBat_seq(., batch = meta2.filtered$Expt,
@@ -347,13 +349,13 @@ BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered, vars = "out
 ```{r deg_list}
 
 meta2.filtered.ord <- meta2.filtered %>%
-  arrange(libID)
+  dplylr::arrange(libID)
 
 counts.filter.pc.combat.ord <- counts.filter.pc.combat %>%
   dplyr::select(all_of(meta2.filtered.ord$libID)) %>% 
-  rownames_to_column() %>% 
-  arrange(rowname) %>% 
-  column_to_rownames()
+  tibble::rownames_to_column() %>% 
+  dplyr::arrange(rowname) %>% 
+  tibble::column_to_rownames()
 
 identical(meta2.filtered.ord$libID,
           colnames(counts.filter.pc.combat.ord)) # TRUE

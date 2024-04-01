@@ -25,6 +25,7 @@ library(tidyverse)
 library(limma)
 library(SEARchways)
 library(ComplexHeatmap)
+library(circlize)
 
 set.seed(101)
 
@@ -74,19 +75,19 @@ get_hm_clust <- function(dat, hm, dimension){
   # Rows of heatmap
   if(dimension == "row"){
     #Deal with single cluster results
-    if(is.list(row_order(hm))){
-      clust.tot <- length(row_order(hm))
+    if(is.list(ComplexHeatmap::row_order(hm))){
+      clust.tot <- length(ComplexHeatmap::row_order(hm))
     } else {
       clust.tot <- 1
     }
 
     for (i in 1:clust.tot){
       #Get row indices
-      if(is.list(row_order(hm))){
+      if(is.list(ComplexHeatmap::row_order(hm))){
         # Dane version of hm row order needs to be numeric (CHM v2.15.1)
-        cluster.index <- row_order(hm)[[(i)]]
+        cluster.index <- ComplexHeatmap::row_order(hm)[[(i)]]
       } else {
-        cluster.index <- row_order(hm)
+        cluster.index <- ComplexHeatmap::row_order(hm)
       }
       
       #Clusters with >1 element
@@ -164,39 +165,39 @@ get_hm_clust <- function(dat, hm, dimension){
 # FDR < 0.25
 
 exp1_contrast_filter_2hr <- exp1.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "2hr KO" & contrast_lvl == "2hr WT") %>%
-  pull(gene)
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "2hr KO" & contrast_lvl == "2hr WT") %>%
+  dplyr::pull(gene)
 
 exp1_contrast_filter_6hr <- exp1.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "6hr KO" & contrast_lvl == "6hr WT") %>%
-  pull(gene)
+  dplyr::filter(FDR < 0.25) %>%
+  dplylr::filter(contrast_ref == "6hr KO" & contrast_lvl == "6hr WT") %>%
+  dplyr::pull(gene)
 
 exp1_contrast_filters <- c(exp1_contrast_filter_2hr, exp1_contrast_filter_6hr)
 
 exp1_sig_genes <- exp1.lme$lme %>%
-  filter(variable == "Time:Genotype") %>%
-  filter(FDR < 0.25) %>%
-  filter(gene %in% exp1_contrast_filters) %>%
-  pull(gene)
+  dplyr::filter(variable == "Time:Genotype") %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(gene %in% exp1_contrast_filters) %>%
+  dplyr::pull(gene)
 
 #Format exp1 for heatmap
 exp1.E <- as.data.frame(voom.exp1$E) %>% 
-  rownames_to_column() %>% 
+  tibble::rownames_to_column() %>% 
   #Rename libraries
-  pivot_longer(-rowname, names_to = "libID") %>% 
-  left_join(voom.exp1$targets %>% select(libID, Genotype, Time, Animal)) %>% 
-  mutate(name = paste(Genotype, Time, Animal)) %>% 
+  tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
+  dplyr::left_join(voom.exp1$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
+  dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
   dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
-  pivot_wider() %>% 
+  tidyr::pivot_wider() %>% 
   #Filter to significant genes
-  filter(rowname %in% exp1_sig_genes) %>% 
+  dplyr::filter(rowname %in% exp1_sig_genes) %>% 
   #Rename genes to symbols
-  left_join(voom.exp1$genes, by=c("rowname"="ensembl_gene_id")) %>% 
-  unnest(symbol) %>% 
-  select(-rowname) %>% 
-  column_to_rownames("symbol") %>%
+  dplyr::left_join(voom.exp1$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  tidyr::unnest(symbol) %>% 
+  dplyr::select(-rowname) %>% 
+  tibble::column_to_rownames("symbol") %>%
   as.matrix()
 
 exp1.counts.scaled <- t(scale(t(exp1.E)))
@@ -219,8 +220,10 @@ exp1.counts.scaled <- as.data.frame(exp1.counts.scaled) %>%
 anno_groups <- str_split(colnames(exp1.counts.scaled), pattern = " ")
 
 ha = ComplexHeatmap::HeatmapAnnotation(
-  Genotype = sapply(anno_groups,"[[",1),
-  Time = sapply(anno_groups,"[[",2),
+  Genotype = c(rep("WT", 15), rep("KO", 15)),
+  Time = c(rep("0hr", 5), rep("2hr", 5), rep("6hr", 5), 
+           rep("0hr", 5), rep("2hr", 5), rep("6hr", 5)),
+  
   col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
              Time = c("0hr" = "#994F00", "2hr" = "#006CD1", "6hr" = "#E1BE6A"))
 )
@@ -254,32 +257,32 @@ dev.off()
 # FDR < 0.25
 
 exp2_contrast_filter_24hr <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "24hr KO" & contrast_lvl == "24hr WT") %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO" & contrast_lvl == "24hr WT") %>%
+  dplyr::pull(unique(gene))
   
 exp2_sig_genes <- exp2.lme$lme %>%
-  filter(variable == "Time:Genotype") %>%
-  filter(FDR < 0.25) %>%
-  filter(gene %in% exp2_contrast_filter_24hr) %>%
-  pull(gene)
+  dplyr::filter(variable == "Time:Genotype") %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(gene %in% exp2_contrast_filter_24hr) %>%
+  dplyr::pull(gene)
 
 #Format exp1 for heatmap
 exp2.E <- as.data.frame(voom.exp2$E) %>% 
-  rownames_to_column() %>% 
+  tibble::rownames_to_column() %>% 
   #Rename libraries
-  pivot_longer(-rowname, names_to = "libID") %>% 
-  left_join(voom.exp2$targets %>% select(libID, Genotype, Time, Animal)) %>% 
-  mutate(name = paste(Genotype, Time, Animal)) %>% 
+  tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
+  dplyr::left_join(voom.exp2$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
+  dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
   dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
-  pivot_wider() %>% 
+  tidyr::pivot_wider() %>% 
   #Filter to significant genes
-  filter(rowname %in% exp1_sig_genes) %>% 
+  dplyr::filter(rowname %in% exp2_sig_genes) %>% 
   #Rename genes to symbols
-  left_join(voom.exp2$genes, by=c("rowname"="ensembl_gene_id")) %>% 
-  unnest(symbol) %>% 
-  select(-rowname) %>% 
-  column_to_rownames("symbol") %>%
+  dplyr::left_join(voom.exp2$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  tidyr::unnest(symbol) %>% 
+  dplyr::select(-rowname) %>% 
+  tibble::column_to_rownames("symbol") %>%
   as.matrix()
 
 exp2_counts_scaled <- t(scale(t(exp2.E)))
@@ -305,7 +308,7 @@ ha2 = ComplexHeatmap::HeatmapAnnotation(
              `Time/Condition` = c("0hr" = "#994F00", "24hr" = "#006CD1", "24hr+antiIL2" = "#E1BE6A"))
 )
 
-experiment_2_heatmap <- Heatmap(
+experiment_2_heatmap <- ComplexHeatmap::Heatmap(
   exp2_counts_scaled,
   top_annotation = ha2,
   cluster_columns = FALSE,
@@ -321,7 +324,7 @@ experiment_2_heatmap <- Heatmap(
   heatmap_legend_param = list(title = "Log2 CPM"))
 
 pdf(file = "figures/heatmaps/experiment_2_heatmap.pdf")
-draw(experiment_2_heatmap)
+ComplexHeatmap::draw(experiment_2_heatmap)
 dev.off()
 
 ```
@@ -331,7 +334,7 @@ dev.off()
 ```{r get_hm_cl_exp1, message=FALSE}
 
 get_hm_cl_exp1 <- get_hm_clust(dat = exp1.counts.scaled, 
-               hm = draw(experiment_1_heatmap), 
+               hm = ComplexHeatmap::draw(experiment_1_heatmap), 
                dimension = "row")
 
 write_csv(get_hm_cl_exp1, file = "figures/heatmaps/exp1_genes_per_cluster.csv")
@@ -341,7 +344,7 @@ write_csv(get_hm_cl_exp1, file = "figures/heatmaps/exp1_genes_per_cluster.csv")
 ```{r get_hm_cl_exp2, message=FALSE}
 
 get_hm_cl_exp2 <- get_hm_clust(dat = exp2_counts_scaled, 
-               hm = draw(experiment_2_heatmap), 
+               hm = ComplexHeatmap::draw(experiment_2_heatmap), 
                dimension = "row")
 
 write_csv(get_hm_cl_exp2, file = "figures/heatmaps/exp2_genes_per_cluster.csv")
@@ -390,10 +393,11 @@ exp2_Hallmark <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$r
                         category = "H")
 
 exp2_GO %>% 
-  mutate(genes=as.character(genes)) %>% 
+  dplyr::mutate(genes=as.character(genes)) %>% 
   write_csv(file = "results/enrichment_outputs/exp2_GO_enr.csv")
+
 exp2_Hallmark %>% 
-  mutate(genes=as.character(genes)) %>% 
+  dplyr::mutate(genes=as.character(genes)) %>% 
   write_csv(file = "results/enrichment_outputs/exp2_Hallmark_enr.csv")
 
 ```
@@ -405,61 +409,61 @@ exp2_Hallmark %>%
 ```{r exp2_H_bubbleplot, message=FALSE}
 
 exp2_H_enr_df <- exp2_Hallmark %>%
-  mutate(pathway = gsub('HALLMARK_', '', pathway)) %>%
-  mutate(pathway = gsub('_', ' ', pathway)) %>%
-  filter(group_in_pathway > 5 & FDR < 0.5)
+  dplyr::mutate(pathway = gsub('HALLMARK_', '', pathway)) %>%
+  dplyr::mutate(pathway = gsub('_', ' ', pathway)) %>%
+  dplyr::filter(group_in_pathway > 5 & FDR < 0.5)
 
 ### reference FC is WT minus KO, FC title change positive = down, negative = up
 
 # 0hr DOWN in KO
 bp_0hr_dn <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "0hr KO") %>%
-  filter(contrast_lvl == "0hr WT") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "0hr KO") %>%
+  dplyr::filter(contrast_lvl == "0hr WT") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
 
 # 0hr UP in KO
 bp_0hr_up <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "0hr KO") %>%
-  filter(contrast_lvl == "0hr WT") %>%
-  filter(estimate < 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "0hr KO") %>%
+  dplyr::filter(contrast_lvl == "0hr WT") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
 
 ### 24hr KO v 24hr WT
 # 24hr UP in KO
 bp_24hr_dn <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "24hr KO") %>%
-  filter(contrast_lvl == "24hr WT") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO") %>%
+  dplyr::filter(contrast_lvl == "24hr WT") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
        
 # 24hr UP in KO
 bp_24hr_up <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "24hr KO") %>%
-  filter(contrast_lvl == "24hr WT") %>%
-  filter(estimate < 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO") %>%
+  dplyr::filter(contrast_lvl == "24hr WT") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
 
 ### 24hr+anti-IL2 KO v 24hr+anti-IL2 WT
 # 24hr+anti-IL2 UP in KO
 bp_24hrIL2_up <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
-  filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
-  filter(estimate < 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
+  dplyr::filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
 
 # 24hr+anti-IL2 DOWN in KO
 bp_24hrIL2_dn <- exp2.lme$lme.contrast %>%
-  filter(FDR < 0.25) %>%
-  filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
-  filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
-  filter(estimate > 0) %>%
-  pull(unique(gene))
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
+  dplyr::filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
 
 #Run enrichment
 enr_all <- SEARchways::BIGprofiler(
@@ -474,14 +478,14 @@ enr_all <- SEARchways::BIGprofiler(
   category = "H")
 
 exp2_enr_bp_df <- enr_all %>%
-  filter(group_in_pathway > 5) %>%
-  filter(FDR < 0.25) %>%
+  dplyr::filter(group_in_pathway > 5) %>%
+  dplyr::filter(FDR < 0.25) %>%
   #24 hr contrasts only
-  filter(group %in% c("24hr DOWN", "24hr UP", 
+  dplyr::filter(group %in% c("24hr DOWN", "24hr UP", 
                       "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")) %>% 
-  mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
-  mutate(pathway = gsub("_", " ", pathway)) %>% 
-  mutate(contrast = factor(group, 
+  dplyr::mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
+  dplyr::mutate(pathway = gsub("_", " ", pathway)) %>% 
+  dplyr::mutate(contrast = factor(group, 
                          levels = c("24hr DOWN", "24hr UP", 
                                       "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")))
 
@@ -517,11 +521,11 @@ exp2_bubble_plot
 ```{r exp1_all_bps, message=FALSE, eval=FALSE}
 
 exp1_gene_counts <- as.data.frame(exp1.E) %>%
-  rownames_to_column("gene_symbol") %>%
-  pivot_longer(-gene_symbol) %>%
+  tibble::rownames_to_column("gene_symbol") %>%
+  dplyr::pivot_longer(-gene_symbol) %>%
   dplyr::select(gene_symbol, name, value) %>%
-  arrange(name) %>%
-  mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
+  dplyr::arrange(name) %>%
+  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
 
 uniq_gene_exp1 <- unique(exp1_gene_counts$gene_symbol)
 
@@ -531,12 +535,12 @@ for (gene in seq_along(uniq_gene_exp1)) {
   # print(gene)
   
   temp_clust_num <- get_hm_cl_exp1  %>%
-    filter(row == gene_title) %>%
-    select(cluster) %>%
-    pull(cluster)
+    dplyr::filter(row == gene_title) %>%
+    dplyr::select(cluster) %>%
+    dplyr::pull(cluster)
   
   ggplot(exp1_gene_counts %>% 
-           filter(gene_symbol == uniq_gene_exp1[gene]), 
+           dplyr::filter(gene_symbol == uniq_gene_exp1[gene]), 
          aes(x = new_name, y = value)) +
     geom_boxplot() +
     geom_point(aes(col = new_name)) +
@@ -558,11 +562,11 @@ for (gene in seq_along(uniq_gene_exp1)) {
 ```{r exp2_all_bps, message=FALSE, eval=FALSE}
 
 exp2_gene_counts <- as.data.frame(exp2.E) %>%
-  rownames_to_column("gene_symbol") %>%
-  pivot_longer(-gene_symbol) %>%
-  select(gene_symbol, name, value) %>%
-  arrange(name) %>%
-  mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
+  tibble::rownames_to_column("gene_symbol") %>%
+  dplyr::pivot_longer(-gene_symbol) %>%
+  dplyr::select(gene_symbol, name, value) %>%
+  dplyr::arrange(name) %>%
+  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
 
 uniq_gene_exp2 <- unique(exp2_gene_counts$gene_symbol)
 
@@ -573,9 +577,9 @@ for (gene in seq_along(uniq_gene_exp2)) {
   gene_title <- uniq_gene_exp2[gene]
   
   temp_clust_num <- get_hm_cl_exp2  %>%
-    filter(row == gene_title) %>%
-    select(cluster) %>%
-    pull(cluster)
+    dplyr::filter(row == gene_title) %>%
+    dplyr::select(cluster) %>%
+    dplyr::pull(cluster)
   
   ggplot(exp2_gene_counts %>% 
            filter(gene_symbol == uniq_gene_exp2[gene]), 

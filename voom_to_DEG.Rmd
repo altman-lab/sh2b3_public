@@ -35,6 +35,7 @@ set.seed(101)
 ```{r create_out_dirs, message=FALSE}
 
 dir.create("results/lme_outputs/", showWarnings = FALSE, recursive = TRUE)
+
 ```
 
 ### Load Voom Object
@@ -57,7 +58,7 @@ voom.obj$targets$Genotype <- as.factor(voom.obj$targets$Genotype)
 voom.obj$targets$Time <- as.factor(voom.obj$targets$Time)
 
 voom.obj$targets <- voom.obj$targets %>%
-  rownames_to_column(var = "ptID")
+  tibble::rownames_to_column(var = "ptID")
 
 ```
 
@@ -73,9 +74,9 @@ load("results/lme_outputs/experiment2_lme.RData")
 
 voom.obj$genes <- voom.obj$genes %>%
   dplyr::select(ensembl_gene_id, symbol) %>% # create ensembl:symbol dict
-  unnest(symbol) %>%
+  tidyr::unnest(symbol) %>%
   # for ensembl IDs w/o associated gene symbols, write ensembl ID as gene symbol
-  mutate(symbol = as.list(case_when(ensembl_gene_id == "ENSMUSG00000062783" ~ "Csprs",
+  dplyr::mutate(symbol = as.list(case_when(ensembl_gene_id == "ENSMUSG00000062783" ~ "Csprs",
                             ensembl_gene_id == "ENSMUSG00000079190" ~ "ENSMUSG00000079190",
                             ensembl_gene_id == "ENSMUSG00000079192" ~ "ENSMUSG00000079192",
                             ensembl_gene_id == "ENSMUSG00000079222" ~ "ENSMUSG00000079222",
@@ -103,8 +104,9 @@ voom.exp1 <- voom.obj
 
 # filter experiment 1 (Expt == A) and corresponding time pts
 voom.exp1$targets <- voom.exp1$targets %>%
-  filter(Expt == "A") %>%
+  dplyr::filter(Expt == "A") %>%
   droplevels(.)
+
 subset_sample_names_exp1 <- voom.exp1$targets$ptID
 
 # add voom.exp1$weights colnames
@@ -133,8 +135,9 @@ voom.exp2 <- voom.obj
 
 # filter experiment 2 (Expt == B) and remove smaller batch
 voom.exp2$targets <- voom.exp2$targets %>%
-  filter(Expt == "B" & Batch == "2") %>%
+  dplyr::filter(Expt == "B" & Batch == "2") %>%
   droplevels(.)
+
 subset_sample_names_exp2 <- voom.exp2$targets$ptID
 
 # add voom.exp2$weights colnames
@@ -151,6 +154,7 @@ voom.exp2$E <- as.data.frame(voom.exp2$E) %>%
   as.matrix()
 
 save(voom.exp2, file = "data_clean/voom_exp2.RData")
+
 ```
 
 ## Linear Mixed Effect Models
@@ -168,16 +172,20 @@ exp1.lme <- kimma::kmFit(dat = voom.exp1, patientID = "Animal",
                       metrics = TRUE)
 
 save(exp1.lme, file = "results/lme_outputs/experiment1_lme.RData")
+
 ```
 
 ```{r}
-summarise_kmFit(exp1.lme$lme,
+
+kimma::summarise_kmFit(exp1.lme$lme,
                 fdr.cutoff = c(0.05, 0.1, 0.25))
+
 ```
 
 ### Experiment 2 LME
 
 ```{r exp2_lme, eval=FALSE}
+
 exp2.lme <- kimma::kmFit(dat = voom.exp2, patientID = "Animal",
                       model = "~ Time*Genotype + (1|Animal)",
                       contrast_var = "Time:Genotype",
@@ -187,11 +195,14 @@ exp2.lme <- kimma::kmFit(dat = voom.exp2, patientID = "Animal",
                       metrics = TRUE)
 
 save(exp2.lme, file = "results/lme_outputs/experiment2_lme.RData")
+
 ```
 
 ```{r}
-summarise_kmFit(exp2.lme$lme,
+
+kimma::summarise_kmFit(exp2.lme$lme,
                 fdr.cutoff = c(0.05, 0.1, 0.25))
+
 ```
 
 ### Session Info
