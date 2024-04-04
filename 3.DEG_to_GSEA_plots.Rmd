@@ -215,10 +215,8 @@ exp1.row.dend <- exp1.counts.scaled %>%
 anno_groups <- str_split(colnames(exp1.counts.scaled), pattern = " ")
 
 ha = ComplexHeatmap::HeatmapAnnotation(
-  Genotype = c(rep("WT", 15), rep("KO", 15)),
-  Time = c(rep("0hr", 5), rep("2hr", 5), rep("6hr", 5), 
-           rep("0hr", 5), rep("2hr", 5), rep("6hr", 5)),
-  
+  Genotype = sapply(anno_groups,"[[",1),
+  Time = sapply(anno_groups,"[[",2),
   col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
              Time = c("0hr" = "#994F00", "2hr" = "#006CD1", "6hr" = "#E1BE6A"))
 )
