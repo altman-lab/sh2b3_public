@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Clean to Voom
-
+## Setup
 ### Load libraries
 
 ```{r load_libs, message=FALSE, warning=FALSE}
@@ -46,7 +46,7 @@ dir.create("figures/clean_to_voom_figs", showWarnings = FALSE)
 
 ```
 
-### Load Data
+## Load Data
 
 ```{r load_dat, warning=FALSE, message=FALSE}
 
@@ -70,6 +70,7 @@ meta1 <- bind_rows(exp1_sample_key, exp2_sample_key) %>%
   dplyr::arrange(libID)
 ```
 
+## Sample filtering
 ### Visualize unfiltered data
 
 ```{r viz_raw_dat, message=FALSE}
@@ -142,6 +143,7 @@ dplyr::all_equal(counts, count.filter)
 
 ```
 
+## Gene filtering
 ### Filter non protein coding genes
 
 ```{r filter_non_protein_genes_noRun, eval = FALSE, echo = FALSE}
@@ -187,6 +189,7 @@ counts.filter.pc <- count.filter %>%
 
 ```
 
+## Batch effects
 ### Visaulize Batch Effects
 
 ```{r batch_effect_pca, message = FALSE}
@@ -324,6 +327,7 @@ batch_corrected_pca
 
 ```
 
+## PCA outliers
 ### Check PCA Outliers
 
 ```{r pca_outliers, message=FALSE}
@@ -333,6 +337,7 @@ BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta1.filter, vars = "outli
 
 ```
 
+## Normalization
 ### Create DEG List
 
 ```{r deg_list}
@@ -396,7 +401,7 @@ plot_pca(dat.abund.norm.voom, vars = c("Time", "Genotype", "Expt", "outlier")) %
 
 ```
 
-### Save Data
+## Save Data
 
 ```{r save_dat}
 
