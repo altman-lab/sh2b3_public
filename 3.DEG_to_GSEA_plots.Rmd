@@ -171,7 +171,7 @@ exp1_contrast_filter_2hr <- exp1.lme$lme.contrast %>%
 
 exp1_contrast_filter_6hr <- exp1.lme$lme.contrast %>%
   dplyr::filter(FDR < 0.25) %>%
-  dplylr::filter(contrast_ref == "6hr KO" & contrast_lvl == "6hr WT") %>%
+  dplyr::filter(contrast_ref == "6hr KO" & contrast_lvl == "6hr WT") %>%
   dplyr::pull(gene)
 
 exp1_contrast_filters <- c(exp1_contrast_filter_2hr, exp1_contrast_filter_6hr)
@@ -522,7 +522,7 @@ exp2_bubble_plot
 
 exp1_gene_counts <- as.data.frame(exp1.E) %>%
   tibble::rownames_to_column("gene_symbol") %>%
-  dplyr::pivot_longer(-gene_symbol) %>%
+  tidyr::pivot_longer(-gene_symbol) %>%
   dplyr::select(gene_symbol, name, value) %>%
   dplyr::arrange(name) %>%
   dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
@@ -563,7 +563,7 @@ for (gene in seq_along(uniq_gene_exp1)) {
 
 exp2_gene_counts <- as.data.frame(exp2.E) %>%
   tibble::rownames_to_column("gene_symbol") %>%
-  dplyr::pivot_longer(-gene_symbol) %>%
+  tidyr::pivot_longer(-gene_symbol) %>%
   dplyr::select(gene_symbol, name, value) %>%
   dplyr::arrange(name) %>%
   dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
