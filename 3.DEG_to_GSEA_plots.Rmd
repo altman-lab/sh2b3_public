@@ -1,0 +1,615 @@
+---
+title: "Enrichment and gene set analyses"
+author: "Dane Grosvenor"
+date: "version `r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# DEG to GSEA and Plots
+## Setup
+### Load Libraries
+
+```{r load_libs, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(limma)
+library(SEARchways)
+library(ComplexHeatmap)
+library(circlize)
+
+set.seed(101)
+
+```
+
+### Create output directories
+
+```{r create_out_dirs, message=FALSE}
+
+dir.create("figures/heatmaps", showWarnings = FALSE)
+dir.create("figures/boxplots", showWarnings = FALSE)
+dir.create("figures/boxplots/exp1", showWarnings = FALSE)
+dir.create("figures/boxplots/exp2", showWarnings = FALSE)
+dir.create("figures/bubbleplots", showWarnings = FALSE)
+dir.create("results/enrichment_outputs", showWarnings = FALSE)
+
+```
+
+## Load Data
+
+```{r load_data, message=FALSE}
+
+# load RData w/ multiple objects
+loadRData <- function(fileName) {
+  load(fileName)
+  get(ls()[ls() !="fileName"])
+}
+
+# load exp1.lme and exp2.lme
+exp1.lme <- loadRData("results/lme_outputs/experiment1_lme.RData")
+exp2.lme <- loadRData("results/lme_outputs/experiment2_lme.RData")
+
+# load exp1 and exp2 voom objects
+voom.exp1 <- loadRData("data_clean/voom_exp1.RData")
+voom.exp2 <- loadRData("data_clean/voom_exp2.RData")
+
+```
+
+### Get Heat Map Cluster Function
+
+```{r get_hm_clust_fx}
+
+get_hm_clust <- function(dat, hm, dimension){
+
+  cluster.result <- data.frame()
+
+  # Rows of heatmap
+  if(dimension == "row"){
+    #Deal with single cluster results
+    if(is.list(ComplexHeatmap::row_order(hm))){
+      clust.tot <- length(ComplexHeatmap::row_order(hm))
+    } else {
+      clust.tot <- 1
+    }
+
+    for (i in 1:clust.tot){
+      #Get row indices
+      if(is.list(ComplexHeatmap::row_order(hm))){
+        # Dane version of hm row order needs to be numeric (CHM v2.15.1)
+        cluster.index <- ComplexHeatmap::row_order(hm)[[(i)]]
+      } else {
+        cluster.index <- ComplexHeatmap::row_order(hm)
+      }
+      
+      #Clusters with >1 element
+      if(length(cluster.index) > 1){
+        #Pull clusters
+        cluster.result <- t(t(row.names(dat[cluster.index,]))) %>%
+          #Convert to data frame
+          as.data.frame() %>%
+          #row order within cluster
+          mutate(row_within_cluster = 1:length(cluster.index)) %>%
+          #add cluster name
+          mutate(cluster = paste0("cluster", i)) %>%
+          #Rename default column
+          rename(row=V1) %>%
+          #concatenate results
+          bind_rows(cluster.result)
+      } else {
+        #Clusters with only 1 element
+        cluster.result <- data.frame(row = rownames(dat)[cluster.index],
+                                     row_within_cluster = 1,
+                                     cluster = paste0("cluster", i)) %>%
+          bind_rows(cluster.result)
+      }
+    }
+  } else if(dimension == "col"){
+    # Columns of heatmap
+
+    #Deal with single cluster results
+    if(is.list(column_order(hm))){
+      clust.tot <- length(column_order(hm))
+    } else {
+      clust.tot <- 1
+    }
+    
+    for (i in 1:clust.tot){
+      #Get column indices
+      if(is.list(column_order(hm))){
+        cluster.index <- column_order(hm)[[(i)]]
+      } else {
+        cluster.index <- column_order(hm)
+      }
+
+      #Clusters with >1 element
+      if(length(cluster.index) > 1){
+        cluster.result <- t(t(colnames(dat[,cluster.index]))) %>%
+          as.data.frame() %>%
+          mutate(col_within_cluster = 1:length(cluster.index)) %>%
+          mutate(cluster = paste0("cluster", i)) %>%
+          rename(col=V1) %>%
+          bind_rows(cluster.result)
+      } else {
+        #Clusters with only 1 element
+        cluster.result <- data.frame(col = colnames(dat)[cluster.index],
+                                     col_within_cluster = 1,
+                                     cluster = paste0("cluster", i)) %>%
+          bind_rows(cluster.result)
+      }
+    }
+  } else{ stop("dimension must be one of row or col.") }
+
+  cluster.result <- cluster.result[order(cluster.result$cluster),]
+
+  return(cluster.result)
+}
+
+```
+
+## Heatmaps with ComplexHeatMap
+
+### Experiment 1 Heatmap
+
+```{r exp1_hm, message=FALSE}
+
+# specificaly look at 2hr WT to KO contrast & 6hr WT to KO contrast
+# FDR < 0.25
+
+exp1_contrast_filter_2hr <- exp1.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "2hr KO" & contrast_lvl == "2hr WT") %>%
+  dplyr::pull(gene)
+
+exp1_contrast_filter_6hr <- exp1.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "6hr KO" & contrast_lvl == "6hr WT") %>%
+  dplyr::pull(gene)
+
+exp1_contrast_filters <- c(exp1_contrast_filter_2hr, exp1_contrast_filter_6hr)
+
+exp1_sig_genes <- exp1.lme$lme %>%
+  dplyr::filter(variable == "Time:Genotype") %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(gene %in% exp1_contrast_filters) %>%
+  dplyr::pull(gene)
+
+#Format exp1 for heatmap
+exp1.E <- as.data.frame(voom.exp1$E) %>% 
+  tibble::rownames_to_column() %>% 
+  #Rename libraries
+  tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
+  dplyr::left_join(voom.exp1$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
+  dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
+  arrange(desc(Genotype), Time, Animal) %>% 
+  dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
+  tidyr::pivot_wider() %>% 
+  #Filter to significant genes
+  dplyr::filter(rowname %in% exp1_sig_genes) %>% 
+  #Rename genes to symbols
+  dplyr::left_join(voom.exp1$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  tidyr::unnest(symbol) %>% 
+  dplyr::select(-rowname) %>% 
+  tibble::column_to_rownames("symbol") %>%
+  as.matrix()
+
+exp1.counts.scaled <- t(scale(t(exp1.E)))
+
+# k = 6 clust dendrogram
+
+exp1.row.dend <- exp1.counts.scaled %>%
+  dist() %>%
+  hclust() %>%
+  as.dendrogram() %>%
+  dendextend::set("branches_k_color", k = 6)
+
+# top bar annotation
+anno_groups <- str_split(colnames(exp1.counts.scaled), pattern = " ")
+
+ha = ComplexHeatmap::HeatmapAnnotation(
+  Genotype = sapply(anno_groups,"[[",1),
+  Time = sapply(anno_groups,"[[",2),
+  col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
+             Time = c("0hr" = "#994F00", "2hr" = "#006CD1", "6hr" = "#E1BE6A"))
+)
+
+experiment_1_heatmap <- ComplexHeatmap::Heatmap(
+  exp1.counts.scaled,
+  top_annotation = ha,
+  cluster_columns = FALSE,
+  cluster_rows = exp1.row.dend,
+  row_split = 6,
+  column_gap = unit(1, "mm"),
+  row_gap = unit(2, "mm"),
+  row_names_gp = grid::gpar(fontsize = 7),
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  column_names_rot = 90,
+  heatmap_legend_param = list(title = "Log2 CPM")
+  )
+
+pdf(file = "figures/heatmaps/experiment_1_heatmap.pdf")
+draw(experiment_1_heatmap)
+dev.off()
+
+```
+
+### Experiment 2 Heatmap
+
+```{r exp2_hm, message=FALSE}
+
+# specificaly look at 24hr WT to KO contrast
+# FDR < 0.25
+
+exp2_contrast_filter_24hr <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO" & contrast_lvl == "24hr WT") %>%
+  dplyr::pull(unique(gene))
+  
+exp2_sig_genes <- exp2.lme$lme %>%
+  dplyr::filter(variable == "Time:Genotype") %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(gene %in% exp2_contrast_filter_24hr) %>%
+  dplyr::pull(gene)
+
+#Format exp1 for heatmap
+exp2.E <- as.data.frame(voom.exp2$E) %>% 
+  tibble::rownames_to_column() %>% 
+  #Rename libraries
+  tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
+  dplyr::left_join(voom.exp2$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
+  dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
+  arrange(desc(Genotype),Time,Animal) %>% 
+  dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
+  tidyr::pivot_wider() %>% 
+  #Filter to significant genes
+  dplyr::filter(rowname %in% exp2_sig_genes) %>% 
+  #Rename genes to symbols
+  dplyr::left_join(voom.exp2$genes, by=c("rowname"="ensembl_gene_id")) %>% 
+  tidyr::unnest(symbol) %>% 
+  dplyr::select(-rowname) %>% 
+  tibble::column_to_rownames("symbol") %>%
+  as.matrix()
+
+exp2_counts_scaled <- t(scale(t(exp2.E)))
+
+exp2_row_dend <- exp2_counts_scaled %>%
+  dist() %>%
+  hclust() %>%
+  as.dendrogram() %>%
+  dendextend::set("branches_k_color", k = 7)
+
+# top bar annotation
+anno_groups2 <- str_split(colnames(exp2_counts_scaled), pattern = " ")
+
+ha2 = ComplexHeatmap::HeatmapAnnotation(
+  Genotype = sapply(anno_groups2,"[[",1),
+  `Time/Condition` = sapply(anno_groups2,"[[",2),
+  col = list(Genotype = c("WT" = "#13D025", "KO" = "#4B0092"),
+             `Time/Condition` = c("0hr" = "#994F00", "24hr" = "#006CD1", "24hr+antiIL2" = "#E1BE6A"))
+)
+
+experiment_2_heatmap <- ComplexHeatmap::Heatmap(
+  exp2_counts_scaled,
+  top_annotation = ha2,
+  cluster_columns = FALSE,
+  cluster_rows = exp2_row_dend,
+  row_split = 7,
+  column_gap = unit(1, "mm"),
+  row_gap = unit(4 , "mm"),
+  row_names_gp = grid::gpar(fontsize = 7),
+  use_raster = FALSE,
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  column_names_rot = 90,
+  heatmap_legend_param = list(title = "Log2 CPM"))
+
+pdf(file = "figures/heatmaps/experiment_2_heatmap.pdf")
+ComplexHeatmap::draw(experiment_2_heatmap)
+dev.off()
+
+```
+
+### Get Gene Lists per Cluster
+
+```{r get_hm_cl_exp1, message=FALSE}
+
+get_hm_cl_exp1 <- get_hm_clust(dat = exp1.counts.scaled, 
+               hm = ComplexHeatmap::draw(experiment_1_heatmap), 
+               dimension = "row")
+
+write_csv(get_hm_cl_exp1, file = "figures/heatmaps/exp1_genes_per_cluster.csv")
+
+```
+
+```{r get_hm_cl_exp2, message=FALSE}
+
+get_hm_cl_exp2 <- get_hm_clust(dat = exp2_counts_scaled, 
+               hm = ComplexHeatmap::draw(experiment_2_heatmap), 
+               dimension = "row")
+
+write_csv(get_hm_cl_exp2, file = "figures/heatmaps/exp2_genes_per_cluster.csv")
+
+```
+
+## Enrichment
+
+### Experiment 1 Enrichment (GO and Hallmark)
+
+```{r include=FALSE}
+load("results/enrichment_outputs/all_enrich.RData")
+```
+
+```{r enr_exp1, message=FALSE, eval=FALSE}
+exp1_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp1$row),
+                        ID = "SYMBOL",
+                        species = "mouse",
+                        category = "C5",
+                        subcategory = "GO:BP")
+
+exp1_Hallmark <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp1$row),
+                        ID = "SYMBOL",
+                        species = "mouse",
+                        category = "H")
+
+exp1_GO %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp1_GO_enr.csv")
+exp1_Hallmark %>% 
+  mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp1_Hallmark_enr.csv")
+
+```
+
+### Experiment 2 Enrichment (GO and Hallmark)
+
+```{r enr_exp2, message=FALSE, eval=FALSE}
+
+exp2_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$row),
+                        ID = "SYMBOL",
+                        species = "mouse",
+                        category = "C5",
+                        subcategory = "GO:BP")
+
+exp2_Hallmark <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$row),
+                        ID = "SYMBOL",
+                        species = "mouse",
+                        category = "H")
+
+exp2_GO %>% 
+  dplyr::mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp2_GO_enr.csv")
+
+exp2_Hallmark %>% 
+  dplyr::mutate(genes=as.character(genes)) %>% 
+  write_csv(file = "results/enrichment_outputs/exp2_Hallmark_enr.csv")
+
+```
+
+```{r eval=FALSE}
+save(exp1_GO, exp1_Hallmark, exp2_GO, exp2_Hallmark,
+     file="results/enrichment_outputs/all_enrich.RData")
+```
+
+### Enrichment Bubble Plot
+
+#### Hallmark Experiment 2
+
+```{r exp2_H_bubbleplot, message=FALSE}
+
+exp2_H_enr_df <- exp2_Hallmark %>%
+  dplyr::mutate(pathway = gsub('HALLMARK_', '', pathway)) %>%
+  dplyr::mutate(pathway = gsub('_', ' ', pathway)) %>%
+  dplyr::filter(group_in_pathway > 5 & FDR < 0.5)
+
+### reference FC is WT minus KO, FC title change positive = down, negative = up
+
+# 0hr DOWN in KO
+bp_0hr_dn <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "0hr KO") %>%
+  dplyr::filter(contrast_lvl == "0hr WT") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
+
+# 0hr UP in KO
+bp_0hr_up <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "0hr KO") %>%
+  dplyr::filter(contrast_lvl == "0hr WT") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
+
+### 24hr KO v 24hr WT
+# 24hr UP in KO
+bp_24hr_dn <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO") %>%
+  dplyr::filter(contrast_lvl == "24hr WT") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
+       
+# 24hr UP in KO
+bp_24hr_up <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "24hr KO") %>%
+  dplyr::filter(contrast_lvl == "24hr WT") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
+
+### 24hr+anti-IL2 KO v 24hr+anti-IL2 WT
+# 24hr+anti-IL2 UP in KO
+bp_24hrIL2_up <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
+  dplyr::filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
+  dplyr::filter(estimate < 0) %>%
+  dplyr::pull(unique(gene))
+
+# 24hr+anti-IL2 DOWN in KO
+bp_24hrIL2_dn <- exp2.lme$lme.contrast %>%
+  dplyr::filter(FDR < 0.25) %>%
+  dplyr::filter(contrast_ref == "(24hr+antiIL2 KO)") %>%
+  dplyr::filter(contrast_lvl == "(24hr+antiIL2 WT)") %>%
+  dplyr::filter(estimate > 0) %>%
+  dplyr::pull(unique(gene))
+
+#Run enrichment
+enr_all <- SEARchways::BIGprofiler(
+  gene_list = list("0hr\nDOWN" = bp_0hr_dn,
+                   "0hr\nUP" = bp_0hr_up,
+                   "24hr\nDOWN" = bp_24hr_dn,
+                   "24hr\nUP" = bp_24hr_up,
+                   "24hr+anti-IL2\nDOWN" = bp_24hrIL2_dn,
+                   "24hr+anti-IL2\nUP" = bp_24hrIL2_up),
+  ID = "ENSEMBL",
+  species = "mouse",
+  category = "H")
+
+signif_pw <- enr_all %>% 
+  #24 hr contrasts only
+  dplyr::filter(group %in% c("24hr\nDOWN", "24hr\nUP", 
+                      "24hr+anti-IL2\nDOWN", "24hr+anti-IL2\nUP")) %>%
+  dplyr::filter(group_in_pathway > 5) %>%
+  dplyr::filter(FDR < 0.25) %>%
+  pull(pathway) %>% unique()
+
+exp2_enr_bp_df <- enr_all %>%
+  dplyr::filter(pathway %in% signif_pw)  %>% 
+  #24 hr contrasts only
+  dplyr::filter(group %in% c("24hr\nDOWN", "24hr\nUP", 
+                      "24hr+anti-IL2\nDOWN", "24hr+anti-IL2\nUP")) %>%
+  dplyr::mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
+  dplyr::mutate(pathway = gsub("_", " ", pathway)) %>% 
+  dplyr::mutate(contrast = factor(group, 
+                         levels = c("24hr\nDOWN", "24hr\nUP", 
+                                      "24hr+anti-IL2\nDOWN",
+                                    "24hr+anti-IL2\nUP"))) %>% 
+  #signif group
+  mutate(`FDR < 0.25` = ifelse(FDR<0.25,"Significant","Non-significant"))
+
+# negative log 10 for scale
+
+### Bubble Plot
+
+exp2_bubble_plot <- ggplot(exp2_enr_bp_df, aes(y = pathway, x = contrast, size = group_in_pathway, shape=`FDR < 0.25`)) +
+  geom_point(aes(color = -log10(FDR)), alpha = 1.0) +
+  # theme(axis.text.x = element_text(angle = 90)) +
+  labs(size = "Number of genes in pathway") +
+  scale_x_discrete(drop = FALSE) +
+  xlab("") +
+  ylab("") +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(size='# genes per pathway') +
+  scale_shape_manual(values = c(21,16))
+
+save(enr_all, file = "results/enrichment_outputs/exp2_enr_all.RData")
+
+ggsave("figures/bubbleplots/exp2_enr_bubbleplot.pdf", exp2_bubble_plot,
+       width = 8, height = 5)
+
+exp2_bubble_plot
+
+```
+
+## Boxplots
+
+### Experiment 1 all genes
+
+```{r exp1_all_bps, message=FALSE, eval=FALSE}
+
+exp1_gene_counts <- as.data.frame(exp1.E) %>%
+  tibble::rownames_to_column("gene_symbol") %>%
+  tidyr::pivot_longer(-gene_symbol) %>%
+  dplyr::select(gene_symbol, name, value) %>%
+  dplyr::arrange(name) %>%
+  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
+
+uniq_gene_exp1 <- unique(exp1_gene_counts$gene_symbol)
+
+for (gene in seq_along(uniq_gene_exp1)) {
+  
+  gene_title <- uniq_gene_exp1[gene]
+  # print(gene)
+  
+  temp_clust_num <- get_hm_cl_exp1  %>%
+    dplyr::filter(row == gene_title) %>%
+    dplyr::select(cluster) %>%
+    dplyr::pull(cluster)
+  
+  ggplot(exp1_gene_counts %>% 
+           dplyr::filter(gene_symbol == uniq_gene_exp1[gene]), 
+         aes(x = new_name, y = value)) +
+    geom_boxplot() +
+    geom_point(aes(col = new_name)) +
+    theme(axis.text = element_text(angle = 90, vjust = 0.5)) +
+    ggtitle(paste0("Experiment 1 ", gene_title, " ", temp_clust_num)) +
+    xlab("Genotype:Time/Treatment") +
+    ylab(paste0(gene_title, " expression (log2)"))
+  
+  filename <- paste0("figures/boxplots/exp1/exp1_", uniq_gene_exp1[gene], "_", temp_clust_num, ".png")
+  
+  ggsave(filename = filename, width = 7, height = 7)
+
+}
+
+```
+
+### Experiment 2 all genes
+
+```{r exp2_all_bps, message=FALSE, eval=FALSE}
+
+exp2_gene_counts <- as.data.frame(exp2.E) %>%
+  tibble::rownames_to_column("gene_symbol") %>%
+  tidyr::pivot_longer(-gene_symbol) %>%
+  dplyr::select(gene_symbol, name, value) %>%
+  dplyr::arrange(name) %>%
+  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
+
+uniq_gene_exp2 <- unique(exp2_gene_counts$gene_symbol)
+
+# length(uniq_gene_exp2) # 1553
+
+for (gene in seq_along(uniq_gene_exp2)) {
+  
+  gene_title <- uniq_gene_exp2[gene]
+  
+  temp_clust_num <- get_hm_cl_exp2  %>%
+    dplyr::filter(row == gene_title) %>%
+    dplyr::select(cluster) %>%
+    dplyr::pull(cluster)
+  
+  ggplot(exp2_gene_counts %>% 
+           filter(gene_symbol == uniq_gene_exp2[gene]), 
+         aes(x = new_name, y = value)) +
+    geom_boxplot() +
+    geom_point(aes(col = new_name)) +
+    theme(axis.text = element_text(angle = 90, vjust = 0.5)) +
+    ggtitle(paste0("Experiment 2 ", gene_title, " ", temp_clust_num)) +
+    xlab("Genotype:Time/Treatment") +
+    ylab(paste0(gene_title, " expression (log2)"))
+  
+  filename <- paste0("figures/boxplots/exp2/exp2_", uniq_gene_exp2[gene], "_", temp_clust_num, ".png")
+  
+  ggsave(filename = filename, width = 7, height = 7)
+
+}
+
+```
+
+```{r sesh_info}
+
+sessionInfo()
+
+```
+
