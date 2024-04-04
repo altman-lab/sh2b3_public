@@ -63,10 +63,11 @@ exp2_sample_key <- readr::read_csv('dat_raw/exp2_samplekey.csv') %>% # experimen
   mutate(Expt="B")
 
 # create first combined meta dat obj
-flag.pic.combine <- dplyr::left_join(flagstat, picard)
-meta1 <- flag.pic.combine %>%
-  arrange(libID)
-
+meta1 <- bind_rows(exp1_sample_key, exp2_sample_key) %>%
+  # Merge Experiment Sample Keys w/ Meta data
+  dplyr::right_join(dplyr::left_join(flagstat, picard)) %>% 
+  dplyr::mutate(Batch = as.factor(Batch)) %>% 
+  dplyr::arrange(libID)
 ```
 
 ### Visualize unfiltered data
@@ -106,12 +107,12 @@ cv.max <- max(1, max(meta1$MEDIAN_CV_COVERAGE))
 cv.cutoff.label <- 0.9
 align.cutoff.label <- 75
 
-cv_coverage_plot <- ggplot(flag.pic.combine, aes(x = MEDIAN_CV_COVERAGE, y = paired_mapped/QC_pass*100)) +
+cv_coverage_plot <- ggplot(meta1, aes(x = MEDIAN_CV_COVERAGE, y = paired_mapped/QC_pass*100)) +
   geom_point() +
   lims(x = c(0, cv.max), y = c(0,100)) +
   geom_hline(yintercept = align.cutoff, lty="dashed") +
   geom_vline(xintercept = cv.cutoff, lty="dashed") +
-  geom_text_repel(data = filter(flag.pic.combine, MEDIAN_CV_COVERAGE   > cv.cutoff.label | paired_mapped/QC_pass*100 < align.cutoff.label),
+  geom_text_repel(data = filter(meta1, MEDIAN_CV_COVERAGE   > cv.cutoff.label | paired_mapped/QC_pass*100 < align.cutoff.label),
                   aes(label=libID), show.legend = FALSE, max.overlaps = Inf, box.padding = 1) +
   theme_classic() +
   labs(x = "Median CV coverage", y = "Percent alignment")
@@ -186,18 +187,6 @@ counts.filter.pc <- count.filter %>%
 
 ```
 
-### Merge Experiment Sample Keys w/ Meta data
-
-```{r sample_keys, message = FALSE}
-
-# merge sample keys with meta df
-meta2.filtered <- bind_rows(exp1_sample_key, exp2_sample_key) %>% 
-  dplyr::right_join(meta1.filter) %>% 
-  dplyr::mutate(Batch = as.factor(Batch)) %>% 
-  dplyr::arrange(libID)
-
-```
-
 ### Visaulize Batch Effects
 
 ```{r batch_effect_pca, message = FALSE}
@@ -206,7 +195,7 @@ meta2.filtered <- bind_rows(exp1_sample_key, exp2_sample_key) %>%
 
 # PCA on experiment 1 and 2
 pca1 <- BIGpicture::plot_pca(counts.filter.pc, 
-                     meta = meta2.filtered,
+                     meta = meta1.filter,
                      vars = c("Expt","Batch","Genotype","Time"), 
                      transform_logCPM = TRUE)
 
@@ -239,7 +228,7 @@ exp2_sample_key_adjusted <- exp2_sample_key
 names(exp2_sample_key_adjusted)[5] <- "Expt"
 names(exp2_sample_key_adjusted)[6] <- "Batch"
 
-meta.exp2 <- meta2.filtered %>% 
+meta.exp2 <- meta1.filter %>% 
   dplyr::filter(Expt=="B")
 
 meta.exp2.libIDs <- meta.exp2$libID
@@ -321,12 +310,12 @@ counts.filter.pc.combat <- counts.filter.pc %>%
   tibble::column_to_rownames("Geneid") %>% #transpose
   as.matrix() %>%
   # batch correction
-  sva::ComBat_seq(., batch = meta2.filtered$Expt,
-                  group = meta2.filtered$Genotype,
-                  covar_mod = model.matrix(~ Time, meta2.filtered)) %>%
+  sva::ComBat_seq(., batch = meta1.filter$Expt,
+                  group = meta1.filter$Genotype,
+                  covar_mod = model.matrix(~ Time, meta1.filter)) %>%
   as.data.frame()
 
-batch_corrected_pca <- BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered,
+batch_corrected_pca <- BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta1.filter,
                      vars = c("Time","Expt"),
                      transform_logCPM = TRUE) %>%
   wrap_plots(ncol = 2)
@@ -339,7 +328,7 @@ batch_corrected_pca
 
 ```{r pca_outliers, message=FALSE}
 
-BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered, vars = "outlier",
+BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta1.filter, vars = "outlier",
                      transform_logCPM = TRUE, outlier_sd = 2)
 
 ```
@@ -348,21 +337,21 @@ BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered, vars = "out
 
 ```{r deg_list}
 
-meta2.filtered.ord <- meta2.filtered %>%
+meta1.filter.ord <- meta1.filter %>%
   dplyr::arrange(libID)
 
 counts.filter.pc.combat.ord <- counts.filter.pc.combat %>%
-  dplyr::select(all_of(meta2.filtered.ord$libID)) %>% 
+  dplyr::select(all_of(meta1.filter.ord$libID)) %>% 
   tibble::rownames_to_column() %>% 
   dplyr::arrange(rowname) %>% 
   tibble::column_to_rownames()
 
-identical(meta2.filtered.ord$libID,
+identical(meta1.filter.ord$libID,
           colnames(counts.filter.pc.combat.ord)) # TRUE
 
 dat <- DGEList(
   counts = as.matrix(counts.filter.pc.combat.ord),
-  samples = meta2.filtered.ord,
+  samples = meta1.filter.ord,
   genes = ensembl.key.filter
 )
 
