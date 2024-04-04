@@ -227,9 +227,8 @@ ggsave(pca1$Time, file = "figures/clean_to_voom_figs/pca_time.png")
 # Batch effect in cohorts Experiment 2
 # mutate sample key B (exp 2) Batch --> Experiment; Experiment --> Batch
 
-exp2_sample_key_adjusted <- exp2_sample_key
-names(exp2_sample_key_adjusted)[5] <- "Expt"
-names(exp2_sample_key_adjusted)[6] <- "Batch"
+exp2_sample_key_adjusted <- exp2_sample_key %>% 
+  dplyr::rename(Expt=Batch, Batch=Expt)
 
 meta.exp2 <- meta1.filter %>% 
   dplyr::filter(Expt=="B")
