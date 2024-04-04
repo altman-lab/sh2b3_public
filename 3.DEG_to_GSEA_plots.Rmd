@@ -344,8 +344,11 @@ write_csv(get_hm_cl_exp2, file = "figures/heatmaps/exp2_genes_per_cluster.csv")
 
 ### Experiment 1 Enrichment (GO and Hallmark)
 
-```{r enr_exp1, message=FALSE}
+```{r include=FALSE}
+load("results/enrichment_outputs/all_enrich.RData")
+```
 
+```{r enr_exp1, message=FALSE, eval=FALSE}
 exp1_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp1$row),
                         ID = "SYMBOL",
                         species = "mouse",
@@ -368,7 +371,7 @@ exp1_Hallmark %>%
 
 ### Experiment 2 Enrichment (GO and Hallmark)
 
-```{r enr_exp2, message=FALSE}
+```{r enr_exp2, message=FALSE, eval=FALSE}
 
 exp2_GO <- SEARchways::BIGprofiler(gene_list = list(int = get_hm_cl_exp2$row),
                         ID = "SYMBOL",
@@ -389,6 +392,11 @@ exp2_Hallmark %>%
   dplyr::mutate(genes=as.character(genes)) %>% 
   write_csv(file = "results/enrichment_outputs/exp2_Hallmark_enr.csv")
 
+```
+
+```{r eval=FALSE}
+save(exp1_GO, exp1_Hallmark, exp2_GO, exp2_Hallmark,
+     file="results/enrichment_outputs/all_enrich.RData")
 ```
 
 ### Enrichment Bubble Plot
