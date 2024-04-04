@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # DEG to GSEA and Plots
-
+## Setup
 ### Load Libraries
 
 ```{r load_libs, message=FALSE, warning=FALSE}
@@ -44,7 +44,7 @@ dir.create("results/enrichment_outputs", showWarnings = FALSE)
 
 ```
 
-### Load Data
+## Load Data
 
 ```{r load_data, message=FALSE}
 
@@ -402,9 +402,9 @@ exp2_Hallmark %>%
 
 ```
 
-## Enrichment Bubble Plot
+### Enrichment Bubble Plot
 
-### Hallmark Experiment 2
+#### Hallmark Experiment 2
 
 ```{r exp2_H_bubbleplot, message=FALSE}
 

@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Voom to DEG
-
+## Setup
 ### Load libraries
 
 ```{r load_libs, message=FALSE, warning=FALSE}
@@ -38,7 +38,9 @@ dir.create("results/lme_outputs/", showWarnings = FALSE, recursive = TRUE)
 
 ```
 
-### Load Voom Object
+## Load data
+
+Load Voom Object
 
 ```{r load_dat, message=FALSE}
 
@@ -89,9 +91,9 @@ saveRDS(voom.obj$genes,
 
 ```
 
-## Subset Experiments from Voom object
+### Subset Experiments from Voom object
 
-### Subset Experiment 1 from Voom object (Time as Factor)
+#### Subset Experiment 1 from Voom object (Time as Factor)
 
 ```{r subset_exp1, message=FALSE}
 
@@ -122,7 +124,7 @@ save(voom.exp1, file = "data_clean/voom_exp1.RData")
 
 ```
 
-### Subset Experiment 2 from Voom object
+#### Subset Experiment 2 from Voom object
 
 ```{r subset_exp2, message=FALSE}
 
@@ -201,7 +203,7 @@ kimma::summarise_kmFit(exp2.lme$lme,
 
 ```
 
-### Session Info
+## Session Info
 
 ```{r sesh_info}
 
