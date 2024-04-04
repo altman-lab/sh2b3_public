@@ -349,7 +349,7 @@ BIGpicture::plot_pca(counts.filter.pc.combat, meta = meta2.filtered, vars = "out
 ```{r deg_list}
 
 meta2.filtered.ord <- meta2.filtered %>%
-  dplylr::arrange(libID)
+  dplyr::arrange(libID)
 
 counts.filter.pc.combat.ord <- counts.filter.pc.combat %>%
   dplyr::select(all_of(meta2.filtered.ord$libID)) %>% 
