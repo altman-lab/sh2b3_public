@@ -464,33 +464,43 @@ bp_24hrIL2_dn <- exp2.lme$lme.contrast %>%
 
 #Run enrichment
 enr_all <- SEARchways::BIGprofiler(
-  gene_list = list("0hr DOWN" = bp_0hr_dn,
-                   "0hr UP" = bp_0hr_up,
-                   "24hr DOWN" = bp_24hr_dn,
-                   "24hr UP" = bp_24hr_up,
-                   "24hr+anti-IL2 DOWN" = bp_24hrIL2_dn,
-                   "24hr+anti-IL2 UP" = bp_24hrIL2_up),
+  gene_list = list("0hr\nDOWN" = bp_0hr_dn,
+                   "0hr\nUP" = bp_0hr_up,
+                   "24hr\nDOWN" = bp_24hr_dn,
+                   "24hr\nUP" = bp_24hr_up,
+                   "24hr+anti-IL2\nDOWN" = bp_24hrIL2_dn,
+                   "24hr+anti-IL2\nUP" = bp_24hrIL2_up),
   ID = "ENSEMBL",
   species = "mouse",
   category = "H")
 
-exp2_enr_bp_df <- enr_all %>%
+signif_pw <- enr_all %>% 
+  #24 hr contrasts only
+  dplyr::filter(group %in% c("24hr\nDOWN", "24hr\nUP", 
+                      "24hr+anti-IL2\nDOWN", "24hr+anti-IL2\nUP")) %>%
   dplyr::filter(group_in_pathway > 5) %>%
   dplyr::filter(FDR < 0.25) %>%
+  pull(pathway) %>% unique()
+
+exp2_enr_bp_df <- enr_all %>%
+  dplyr::filter(pathway %in% signif_pw)  %>% 
   #24 hr contrasts only
-  dplyr::filter(group %in% c("24hr DOWN", "24hr UP", 
-                      "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")) %>% 
+  dplyr::filter(group %in% c("24hr\nDOWN", "24hr\nUP", 
+                      "24hr+anti-IL2\nDOWN", "24hr+anti-IL2\nUP")) %>%
   dplyr::mutate(pathway = gsub("HALLMARK_", "", pathway)) %>%
   dplyr::mutate(pathway = gsub("_", " ", pathway)) %>% 
   dplyr::mutate(contrast = factor(group, 
-                         levels = c("24hr DOWN", "24hr UP", 
-                                      "24hr+anti-IL2 DOWN", "24hr+anti-IL2 UP")))
+                         levels = c("24hr\nDOWN", "24hr\nUP", 
+                                      "24hr+anti-IL2\nDOWN",
+                                    "24hr+anti-IL2\nUP"))) %>% 
+  #signif group
+  mutate(`FDR < 0.25` = ifelse(FDR<0.25,"Significant","Non-significant"))
 
 # negative log 10 for scale
 
 ### Bubble Plot
 
-exp2_bubble_plot <- ggplot(exp2_enr_bp_df, aes(y = pathway, x = contrast, size = group_in_pathway)) +
+exp2_bubble_plot <- ggplot(exp2_enr_bp_df, aes(y = pathway, x = contrast, size = group_in_pathway, shape=`FDR < 0.25`)) +
   geom_point(aes(color = -log10(FDR)), alpha = 1.0) +
   # theme(axis.text.x = element_text(angle = 90)) +
   labs(size = "Number of genes in pathway") +
@@ -500,12 +510,13 @@ exp2_bubble_plot <- ggplot(exp2_enr_bp_df, aes(y = pathway, x = contrast, size =
   theme(panel.grid.minor = element_blank()) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  labs(size='# genes per pathway')
+  labs(size='# genes per pathway') +
+  scale_shape_manual(values = c(21,16))
 
 save(enr_all, file = "results/enrichment_outputs/exp2_enr_all.RData")
 
 ggsave("figures/bubbleplots/exp2_enr_bubbleplot.pdf", exp2_bubble_plot,
-       width = 12)
+       width = 8, height = 5)
 
 exp2_bubble_plot
 
