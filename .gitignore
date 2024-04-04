@@ -6,7 +6,6 @@
 .RData
 
 # Rstudio files
-*.Rproj
 .Rproj.user/
 
 # Mac
