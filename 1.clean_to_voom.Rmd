@@ -236,9 +236,7 @@ meta.exp2 <- meta1.filter %>%
 
 meta.exp2.libIDs <- meta.exp2$libID
 
-counts.for.exp2 <- counts.filter.pc[,
-                 names(counts.filter.pc)[names(counts.filter.pc) %in% meta.exp2.libIDs]
-]
+counts.for.exp2 <- counts.filter.pc[,meta.exp2.libIDs]
 
 pca_exp2_geno <- BIGpicture::plot_pca(counts.for.exp2, 
                      meta = meta.exp2,
