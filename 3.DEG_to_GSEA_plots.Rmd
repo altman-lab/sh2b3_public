@@ -189,6 +189,7 @@ exp1.E <- as.data.frame(voom.exp1$E) %>%
   tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
   dplyr::left_join(voom.exp1$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
   dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
+  arrange(desc(Genotype), Time, Animal) %>% 
   dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
   tidyr::pivot_wider() %>% 
   #Filter to significant genes
@@ -209,12 +210,6 @@ exp1.row.dend <- exp1.counts.scaled %>%
   hclust() %>%
   as.dendrogram() %>%
   dendextend::set("branches_k_color", k = 6)
-
-# re-order counts scaled
-
-exp1.counts.scaled <- as.data.frame(exp1.counts.scaled) %>%
-  dplyr::select(starts_with(c("WT ", "KO "))) %>%
-  as.matrix()
 
 # top bar annotation
 anno_groups <- str_split(colnames(exp1.counts.scaled), pattern = " ")
@@ -274,6 +269,7 @@ exp2.E <- as.data.frame(voom.exp2$E) %>%
   tidyr::pivot_longer(-rowname, names_to = "libID") %>% 
   dplyr::left_join(voom.exp2$targets %>% dplyr::select(libID, Genotype, Time, Animal)) %>% 
   dplyr::mutate(name = paste(Genotype, Time, Animal)) %>% 
+  arrange(desc(Genotype),Time,Animal) %>% 
   dplyr::select(-c(libID, Genotype, Time, Animal)) %>% 
   tidyr::pivot_wider() %>% 
   #Filter to significant genes
@@ -292,11 +288,6 @@ exp2_row_dend <- exp2_counts_scaled %>%
   hclust() %>%
   as.dendrogram() %>%
   dendextend::set("branches_k_color", k = 7)
-
-# reorder counts scaled
-exp2_counts_scaled <- as.data.frame(exp2_counts_scaled) %>%
-  dplyr::select(starts_with(c("WT ", "KO "))) %>%
-  as.matrix()
 
 # top bar annotation
 anno_groups2 <- str_split(colnames(exp2_counts_scaled), pattern = " ")
