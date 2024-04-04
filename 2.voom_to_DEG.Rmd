@@ -76,16 +76,12 @@ voom.obj$genes <- voom.obj$genes %>%
   dplyr::select(ensembl_gene_id, symbol) %>% # create ensembl:symbol dict
   tidyr::unnest(symbol) %>%
   # for ensembl IDs w/o associated gene symbols, write ensembl ID as gene symbol
-  dplyr::mutate(symbol = as.list(case_when(ensembl_gene_id == "ENSMUSG00000062783" ~ "Csprs",
-                            ensembl_gene_id == "ENSMUSG00000079190" ~ "ENSMUSG00000079190",
-                            ensembl_gene_id == "ENSMUSG00000079192" ~ "ENSMUSG00000079192",
-                            ensembl_gene_id == "ENSMUSG00000079222" ~ "ENSMUSG00000079222",
-                            ensembl_gene_id == "ENSMUSG00000079808" ~ "ENSMUSG00000079808",
-                            ensembl_gene_id == "ENSMUSG00000095041" ~ "ENSMUSG00000095041",
-                            ensembl_gene_id == "ENSMUSG00000095250" ~ "ENSMUSG00000095250",
-                            ensembl_gene_id == "ENSMUSG00000095672" ~ "ENSMUSG00000095672",
-                            ensembl_gene_id == "ENSMUSG00000095742" ~ "ENSMUSG00000095742",
-                            TRUE ~ symbol)))
+  dplyr::mutate(symbol = as.list(case_when(
+    ensembl_gene_id == "ENSMUSG00000062783" ~ "Csprs",
+    ensembl_gene_id %in% c("ENSMUSG00000079190", "ENSMUSG00000079192", "ENSMUSG00000079222",
+                           "ENSMUSG00000079808", "ENSMUSG00000095041", "ENSMUSG00000095250",
+                           "ENSMUSG00000095672", "ENSMUSG00000095742") ~ ensembl_gene_id,
+    TRUE ~ symbol)))
 
 # single object, use saveRDS()
 saveRDS(voom.obj$genes, 
