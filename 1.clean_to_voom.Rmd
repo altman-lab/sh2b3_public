@@ -205,7 +205,7 @@ pca1 <- BIGpicture::plot_pca(counts.filter.pc,
 pca1$Expt
 pca1$Batch
 
-ggsave(pca1$Batch, file = "figures/clean_to_voom_figs/pca_expt.png")
+ggsave(pca1$Expt, file = "figures/clean_to_voom_figs/pca_expt.png")
 ggsave(pca1$Batch, file = "figures/clean_to_voom_figs/pca_batch.png")
 
 # PCA on genotype (WT v KO)
