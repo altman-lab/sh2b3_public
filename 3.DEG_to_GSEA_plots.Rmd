@@ -533,7 +533,10 @@ exp1_gene_counts <- as.data.frame(exp1.E) %>%
   tidyr::pivot_longer(-gene_symbol) %>%
   dplyr::select(gene_symbol, name, value) %>%
   dplyr::arrange(name) %>%
-  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)))
+  dplyr::mutate(new_name = (sub("^(\\S*\\s+\\S+).*", "\\1", name)),
+                new_name = factor(new_name, 
+                                  levels=c("WT 0hr","WT 2hr","WT 6hr",
+                                           "KO 0hr","KO 2hr","KO 6hr")))
 
 uniq_gene_exp1 <- unique(exp1_gene_counts$gene_symbol)
 
@@ -552,17 +555,19 @@ for (gene in seq_along(uniq_gene_exp1)) {
          aes(x = new_name, y = value)) +
     geom_boxplot() +
     geom_point(aes(col = new_name)) +
-    theme(axis.text = element_text(angle = 90, vjust = 0.5)) +
+    theme_bw() +
+    theme(axis.text = element_text(angle = 45, hjust = 1),
+          legend.position = "none") +
     ggtitle(paste0("Experiment 1 ", gene_title, " ", temp_clust_num)) +
-    xlab("Genotype:Time/Treatment") +
-    ylab(paste0(gene_title, " expression (log2)"))
+    xlab("Genotype Time") +
+    ylab(paste0(gene_title, " expression (log2)")) 
   
   filename <- paste0("figures/boxplots/exp1/exp1_", uniq_gene_exp1[gene], "_", temp_clust_num, ".png")
   
-  ggsave(filename = filename, width = 7, height = 7)
+  ggsave(filename = filename, width = 4, height = 4)
 
 }
-
+beepr::beep()
 ```
 
 ### Experiment 2 all genes
