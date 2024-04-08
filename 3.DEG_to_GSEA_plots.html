@@ -1486,7 +1486,7 @@ font-size: 0.95em;
 
 <h1 class="title toc-ignore">Enrichment and gene set analyses</h1>
 <h4 class="author">Dane Grosvenor</h4>
-<h4 class="date">version April 04, 2024</h4>
+<h4 class="date">version April 08, 2024</h4>
 
 </div>
 
@@ -1972,7 +1972,10 @@ exp2_bubble_plot</code></pre>
   tidyr::pivot_longer(-gene_symbol) %&gt;%
   dplyr::select(gene_symbol, name, value) %&gt;%
   dplyr::arrange(name) %&gt;%
-  dplyr::mutate(new_name = (sub(&quot;^(\\S*\\s+\\S+).*&quot;, &quot;\\1&quot;, name)))
+  dplyr::mutate(new_name = (sub(&quot;^(\\S*\\s+\\S+).*&quot;, &quot;\\1&quot;, name)),
+                new_name = factor(new_name, 
+                                  levels=c(&quot;WT 0hr&quot;,&quot;WT 2hr&quot;,&quot;WT 6hr&quot;,
+                                           &quot;KO 0hr&quot;,&quot;KO 2hr&quot;,&quot;KO 6hr&quot;)))
 
 uniq_gene_exp1 &lt;- unique(exp1_gene_counts$gene_symbol)
 
@@ -1991,16 +1994,19 @@ for (gene in seq_along(uniq_gene_exp1)) {
          aes(x = new_name, y = value)) +
     geom_boxplot() +
     geom_point(aes(col = new_name)) +
-    theme(axis.text = element_text(angle = 90, vjust = 0.5)) +
+    theme_bw() +
+    theme(axis.text = element_text(angle = 45, hjust = 1),
+          legend.position = &quot;none&quot;) +
     ggtitle(paste0(&quot;Experiment 1 &quot;, gene_title, &quot; &quot;, temp_clust_num)) +
-    xlab(&quot;Genotype:Time/Treatment&quot;) +
-    ylab(paste0(gene_title, &quot; expression (log2)&quot;))
+    xlab(&quot;Genotype Time&quot;) +
+    ylab(paste0(gene_title, &quot; expression (log2)&quot;)) 
   
   filename &lt;- paste0(&quot;figures/boxplots/exp1/exp1_&quot;, uniq_gene_exp1[gene], &quot;_&quot;, temp_clust_num, &quot;.png&quot;)
   
-  ggsave(filename = filename, width = 7, height = 7)
+  ggsave(filename = filename, width = 4, height = 4)
 
-}</code></pre>
+}
+beepr::beep()</code></pre>
 </div>
 <div id="experiment-2-all-genes" class="section level3">
 <h3>Experiment 2 all genes</h3>
@@ -2009,7 +2015,13 @@ for (gene in seq_along(uniq_gene_exp1)) {
   tidyr::pivot_longer(-gene_symbol) %&gt;%
   dplyr::select(gene_symbol, name, value) %&gt;%
   dplyr::arrange(name) %&gt;%
-  dplyr::mutate(new_name = (sub(&quot;^(\\S*\\s+\\S+).*&quot;, &quot;\\1&quot;, name)))
+  dplyr::mutate(new_name = (sub(&quot;^(\\S*\\s+\\S+).*&quot;, &quot;\\1&quot;, name)),
+                new_name = (gsub(&quot;\\+&quot;, &quot;\n\\+ &quot;, new_name)),
+                new_name = factor(new_name, 
+                                  levels=c(&quot;WT 0hr&quot;,&quot;WT 24hr&quot;,
+                                           &quot;WT 24hr\n+ antiIL2&quot;,
+                                           &quot;KO 0hr&quot;,&quot;KO 24hr&quot;,
+                                           &quot;KO 24hr\n+ antiIL2&quot;)))
 
 uniq_gene_exp2 &lt;- unique(exp2_gene_counts$gene_symbol)
 
@@ -2029,16 +2041,19 @@ for (gene in seq_along(uniq_gene_exp2)) {
          aes(x = new_name, y = value)) +
     geom_boxplot() +
     geom_point(aes(col = new_name)) +
-    theme(axis.text = element_text(angle = 90, vjust = 0.5)) +
+    theme_bw() +
+    theme(axis.text = element_text(angle = 45, hjust = 1),
+          legend.position = &quot;none&quot;) +
     ggtitle(paste0(&quot;Experiment 2 &quot;, gene_title, &quot; &quot;, temp_clust_num)) +
-    xlab(&quot;Genotype:Time/Treatment&quot;) +
+    xlab(&quot;Genotype Time + Treatment&quot;) +
     ylab(paste0(gene_title, &quot; expression (log2)&quot;))
   
   filename &lt;- paste0(&quot;figures/boxplots/exp2/exp2_&quot;, uniq_gene_exp2[gene], &quot;_&quot;, temp_clust_num, &quot;.png&quot;)
   
-  ggsave(filename = filename, width = 7, height = 7)
+  ggsave(filename = filename, width = 4, height = 4)
 
-}</code></pre>
+}
+beepr::beep()</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 4.3.2 (2023-10-31)
 ## Platform: aarch64-apple-darwin20 (64-bit)
