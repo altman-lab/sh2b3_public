@@ -1,0 +1,1558 @@
+nohup: ignoring input
+Building DAG of jobs...
+MissingInputException in line 38 of /home/ec2-user/SEAsnake/Snakefile_step1:
+Missing input files for rule fastqc_raw:
+data/AR10_R1.fastq.gz
+nohup: ignoring input
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cores: 46
+Rules claiming more threads will be scaled down.
+Job stats:
+job             count    min threads    max threads
+------------  -------  -------------  -------------
+all                 1              1              1
+configscript        1              1              1
+fastqc_raw        120              1              1
+total             122              1              1
+
+Select jobs to execute...
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR7_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR7_R1_fastqc.html, result/qc/1_fastqc_raw/AR7_R1_fastqc.zip
+    jobid: 100
+    wildcards: sample=AR7_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR136_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR136_R1_fastqc.html, result/qc/1_fastqc_raw/AR136_R1_fastqc.zip
+    jobid: 18
+    wildcards: sample=AR136_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR11_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR11_R2_fastqc.html, result/qc/1_fastqc_raw/AR11_R2_fastqc.zip
+    jobid: 5
+    wildcards: sample=AR11_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR154_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR154_R2_fastqc.html, result/qc/1_fastqc_raw/AR154_R2_fastqc.zip
+    jobid: 33
+    wildcards: sample=AR154_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR25_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR25_R2_fastqc.html, result/qc/1_fastqc_raw/AR25_R2_fastqc.zip
+    jobid: 63
+    wildcards: sample=AR25_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR59_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR59_R2_fastqc.html, result/qc/1_fastqc_raw/AR59_R2_fastqc.zip
+    jobid: 93
+    wildcards: sample=AR59_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL22_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL22_R1_fastqc.html, result/qc/1_fastqc_raw/IL22_R1_fastqc.zip
+    jobid: 108
+    wildcards: sample=IL22_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR34_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR34_R1_fastqc.html, result/qc/1_fastqc_raw/AR34_R1_fastqc.zip
+    jobid: 78
+    wildcards: sample=AR34_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR15_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR15_R1_fastqc.html, result/qc/1_fastqc_raw/AR15_R1_fastqc.zip
+    jobid: 40
+    wildcards: sample=AR15_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL25_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL25_R1_fastqc.html, result/qc/1_fastqc_raw/IL25_R1_fastqc.zip
+    jobid: 114
+    wildcards: sample=IL25_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR156_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR156_R1_fastqc.html, result/qc/1_fastqc_raw/AR156_R1_fastqc.zip
+    jobid: 34
+    wildcards: sample=AR156_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR29_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR29_R2_fastqc.html, result/qc/1_fastqc_raw/AR29_R2_fastqc.zip
+    jobid: 71
+    wildcards: sample=AR29_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR132_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR132_R2_fastqc.html, result/qc/1_fastqc_raw/AR132_R2_fastqc.zip
+    jobid: 11
+    wildcards: sample=AR132_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR14_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR14_R1_fastqc.html, result/qc/1_fastqc_raw/AR14_R1_fastqc.zip
+    jobid: 26
+    wildcards: sample=AR14_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR10_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR10_R2_fastqc.html, result/qc/1_fastqc_raw/AR10_R2_fastqc.zip
+    jobid: 3
+    wildcards: sample=AR10_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR136_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR136_R2_fastqc.html, result/qc/1_fastqc_raw/AR136_R2_fastqc.zip
+    jobid: 19
+    wildcards: sample=AR136_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR26_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR26_R1_fastqc.html, result/qc/1_fastqc_raw/AR26_R1_fastqc.zip
+    jobid: 64
+    wildcards: sample=AR26_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR34_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR34_R2_fastqc.html, result/qc/1_fastqc_raw/AR34_R2_fastqc.zip
+    jobid: 79
+    wildcards: sample=AR34_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR5_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR5_R1_fastqc.html, result/qc/1_fastqc_raw/AR5_R1_fastqc.zip
+    jobid: 94
+    wildcards: sample=AR5_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR39_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR39_R1_fastqc.html, result/qc/1_fastqc_raw/AR39_R1_fastqc.zip
+    jobid: 80
+    wildcards: sample=AR39_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR11_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR11_R1_fastqc.html, result/qc/1_fastqc_raw/AR11_R1_fastqc.zip
+    jobid: 4
+    wildcards: sample=AR11_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR137_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR137_R1_fastqc.html, result/qc/1_fastqc_raw/AR137_R1_fastqc.zip
+    jobid: 20
+    wildcards: sample=AR137_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR5_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR5_R2_fastqc.html, result/qc/1_fastqc_raw/AR5_R2_fastqc.zip
+    jobid: 95
+    wildcards: sample=AR5_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL22_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL22_R2_fastqc.html, result/qc/1_fastqc_raw/IL22_R2_fastqc.zip
+    jobid: 109
+    wildcards: sample=IL22_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR156_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR156_R2_fastqc.html, result/qc/1_fastqc_raw/AR156_R2_fastqc.zip
+    jobid: 35
+    wildcards: sample=AR156_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR26_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR26_R2_fastqc.html, result/qc/1_fastqc_raw/AR26_R2_fastqc.zip
+    jobid: 65
+    wildcards: sample=AR26_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL23_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL23_R1_fastqc.html, result/qc/1_fastqc_raw/IL23_R1_fastqc.zip
+    jobid: 110
+    wildcards: sample=IL23_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR12_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR12_R1_fastqc.html, result/qc/1_fastqc_raw/AR12_R1_fastqc.zip
+    jobid: 6
+    wildcards: sample=AR12_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR137_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR137_R2_fastqc.html, result/qc/1_fastqc_raw/AR137_R2_fastqc.zip
+    jobid: 21
+    wildcards: sample=AR137_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR158_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR158_R1_fastqc.html, result/qc/1_fastqc_raw/AR158_R1_fastqc.zip
+    jobid: 38
+    wildcards: sample=AR158_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR28_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR28_R1_fastqc.html, result/qc/1_fastqc_raw/AR28_R1_fastqc.zip
+    jobid: 68
+    wildcards: sample=AR28_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR3_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR3_R2_fastqc.html, result/qc/1_fastqc_raw/AR3_R2_fastqc.zip
+    jobid: 83
+    wildcards: sample=AR3_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR6_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR6_R1_fastqc.html, result/qc/1_fastqc_raw/AR6_R1_fastqc.zip
+    jobid: 98
+    wildcards: sample=AR6_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL24_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL24_R1_fastqc.html, result/qc/1_fastqc_raw/IL24_R1_fastqc.zip
+    jobid: 112
+    wildcards: sample=IL24_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR131_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR131_R2_fastqc.html, result/qc/1_fastqc_raw/AR131_R2_fastqc.zip
+    jobid: 9
+    wildcards: sample=AR131_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR13_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR13_R1_fastqc.html, result/qc/1_fastqc_raw/AR13_R1_fastqc.zip
+    jobid: 24
+    wildcards: sample=AR13_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR158_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR158_R2_fastqc.html, result/qc/1_fastqc_raw/AR158_R2_fastqc.zip
+    jobid: 39
+    wildcards: sample=AR158_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR28_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR28_R2_fastqc.html, result/qc/1_fastqc_raw/AR28_R2_fastqc.zip
+    jobid: 69
+    wildcards: sample=AR28_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR40_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR40_R1_fastqc.html, result/qc/1_fastqc_raw/AR40_R1_fastqc.zip
+    jobid: 84
+    wildcards: sample=AR40_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR6_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR6_R2_fastqc.html, result/qc/1_fastqc_raw/AR6_R2_fastqc.zip
+    jobid: 99
+    wildcards: sample=AR6_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL24_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL24_R2_fastqc.html, result/qc/1_fastqc_raw/IL24_R2_fastqc.zip
+    jobid: 113
+    wildcards: sample=IL24_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR154_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR154_R1_fastqc.html, result/qc/1_fastqc_raw/AR154_R1_fastqc.zip
+    jobid: 32
+    wildcards: sample=AR154_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR25_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR25_R1_fastqc.html, result/qc/1_fastqc_raw/AR25_R1_fastqc.zip
+    jobid: 62
+    wildcards: sample=AR25_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR33_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR33_R2_fastqc.html, result/qc/1_fastqc_raw/AR33_R2_fastqc.zip
+    jobid: 77
+    wildcards: sample=AR33_R2
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/AR59_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR59_R1_fastqc.html, result/qc/1_fastqc_raw/AR59_R1_fastqc.zip
+    jobid: 92
+    wildcards: sample=AR59_R1
+    resources: tmpdir=/tmp
+
+
+[Wed Dec  7 20:23:32 2022]
+rule fastqc_raw:
+    input: data/IL21_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL21_R2_fastqc.html, result/qc/1_fastqc_raw/IL21_R2_fastqc.zip
+    jobid: 107
+    wildcards: sample=IL21_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:38:57 2022]
+Finished job 4.
+1 of 122 steps (1%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:38:57 2022]
+rule fastqc_raw:
+    input: data/AR23_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR23_R1_fastqc.html, result/qc/1_fastqc_raw/AR23_R1_fastqc.zip
+    jobid: 58
+    wildcards: sample=AR23_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:04 2022]
+Finished job 5.
+2 of 122 steps (2%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:04 2022]
+rule fastqc_raw:
+    input: data/AR2_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR2_R2_fastqc.html, result/qc/1_fastqc_raw/AR2_R2_fastqc.zip
+    jobid: 73
+    wildcards: sample=AR2_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:10 2022]
+Finished job 108.
+3 of 122 steps (2%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:10 2022]
+rule fastqc_raw:
+    input: data/AR53_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR53_R1_fastqc.html, result/qc/1_fastqc_raw/AR53_R1_fastqc.zip
+    jobid: 88
+    wildcards: sample=AR53_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:18 2022]
+Finished job 3.
+4 of 122 steps (3%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:18 2022]
+rule fastqc_raw:
+    input: data/AR8_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR8_R2_fastqc.html, result/qc/1_fastqc_raw/AR8_R2_fastqc.zip
+    jobid: 103
+    wildcards: sample=AR8_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:26 2022]
+Finished job 11.
+5 of 122 steps (4%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:26 2022]
+rule fastqc_raw:
+    input: data/AR157_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR157_R1_fastqc.html, result/qc/1_fastqc_raw/AR157_R1_fastqc.zip
+    jobid: 36
+    wildcards: sample=AR157_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:30 2022]
+Finished job 109.
+6 of 122 steps (5%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:30 2022]
+rule fastqc_raw:
+    input: data/AR60_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR60_R1_fastqc.html, result/qc/1_fastqc_raw/AR60_R1_fastqc.zip
+    jobid: 96
+    wildcards: sample=AR60_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:50 2022]
+Finished job 62.
+7 of 122 steps (6%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:50 2022]
+rule fastqc_raw:
+    input: data/AR39_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR39_R2_fastqc.html, result/qc/1_fastqc_raw/AR39_R2_fastqc.zip
+    jobid: 81
+    wildcards: sample=AR39_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:54 2022]
+Finished job 32.
+8 of 122 steps (7%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:54 2022]
+rule fastqc_raw:
+    input: data/AR27_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR27_R1_fastqc.html, result/qc/1_fastqc_raw/AR27_R1_fastqc.zip
+    jobid: 66
+    wildcards: sample=AR27_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:39:55 2022]
+Finished job 63.
+9 of 122 steps (7%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:39:55 2022]
+rule fastqc_raw:
+    input: data/AR16_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR16_R2_fastqc.html, result/qc/1_fastqc_raw/AR16_R2_fastqc.zip
+    jobid: 43
+    wildcards: sample=AR16_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:05 2022]
+Finished job 40.
+10 of 122 steps (8%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:06 2022]
+rule fastqc_raw:
+    input: data/AR27_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR27_R2_fastqc.html, result/qc/1_fastqc_raw/AR27_R2_fastqc.zip
+    jobid: 67
+    wildcards: sample=AR27_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:21 2022]
+Finished job 33.
+11 of 122 steps (9%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:21 2022]
+rule fastqc_raw:
+    input: data/AR60_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR60_R2_fastqc.html, result/qc/1_fastqc_raw/AR60_R2_fastqc.zip
+    jobid: 97
+    wildcards: sample=AR60_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:21 2022]
+Finished job 6.
+12 of 122 steps (10%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:21 2022]
+rule fastqc_raw:
+    input: data/AR3_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR3_R1_fastqc.html, result/qc/1_fastqc_raw/AR3_R1_fastqc.zip
+    jobid: 82
+    wildcards: sample=AR3_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:26 2022]
+Finished job 24.
+13 of 122 steps (11%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:26 2022]
+rule fastqc_raw:
+    input: data/AR134_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR134_R2_fastqc.html, result/qc/1_fastqc_raw/AR134_R2_fastqc.zip
+    jobid: 15
+    wildcards: sample=AR134_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:43 2022]
+Finished job 38.
+14 of 122 steps (11%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:43 2022]
+rule fastqc_raw:
+    input: data/IL23_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL23_R2_fastqc.html, result/qc/1_fastqc_raw/IL23_R2_fastqc.zip
+    jobid: 111
+    wildcards: sample=IL23_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:40:57 2022]
+Finished job 26.
+15 of 122 steps (12%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:40:57 2022]
+rule fastqc_raw:
+    input: data/AR153_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR153_R1_fastqc.html, result/qc/1_fastqc_raw/AR153_R1_fastqc.zip
+    jobid: 30
+    wildcards: sample=AR153_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:02 2022]
+Finished job 94.
+16 of 122 steps (13%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:03 2022]
+rule fastqc_raw:
+    input: data/AR17_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR17_R1_fastqc.html, result/qc/1_fastqc_raw/AR17_R1_fastqc.zip
+    jobid: 44
+    wildcards: sample=AR17_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:08 2022]
+Finished job 39.
+17 of 122 steps (14%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:08 2022]
+rule fastqc_raw:
+    input: data/IL27_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL27_R1_fastqc.html, result/qc/1_fastqc_raw/IL27_R1_fastqc.zip
+    jobid: 118
+    wildcards: sample=IL27_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:26 2022]
+Finished job 95.
+18 of 122 steps (15%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:26 2022]
+rule fastqc_raw:
+    input: data/AR20_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR20_R1_fastqc.html, result/qc/1_fastqc_raw/AR20_R1_fastqc.zip
+    jobid: 52
+    wildcards: sample=AR20_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:37 2022]
+Finished job 83.
+19 of 122 steps (16%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:37 2022]
+rule fastqc_raw:
+    input: data/AR24_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR24_R1_fastqc.html, result/qc/1_fastqc_raw/AR24_R1_fastqc.zip
+    jobid: 60
+    wildcards: sample=AR24_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:40 2022]
+Finished job 78.
+20 of 122 steps (16%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:40 2022]
+rule fastqc_raw:
+    input: data/AR157_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR157_R2_fastqc.html, result/qc/1_fastqc_raw/AR157_R2_fastqc.zip
+    jobid: 37
+    wildcards: sample=AR157_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:47 2022]
+Finished job 9.
+21 of 122 steps (17%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:47 2022]
+rule fastqc_raw:
+    input: data/AR30_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR30_R2_fastqc.html, result/qc/1_fastqc_raw/AR30_R2_fastqc.zip
+    jobid: 75
+    wildcards: sample=AR30_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:41:49 2022]
+Finished job 18.
+22 of 122 steps (18%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:41:49 2022]
+rule fastqc_raw:
+    input: data/AR138_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR138_R1_fastqc.html, result/qc/1_fastqc_raw/AR138_R1_fastqc.zip
+    jobid: 22
+    wildcards: sample=AR138_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:01 2022]
+Finished job 84.
+23 of 122 steps (19%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:01 2022]
+rule fastqc_raw:
+    input: data/AR54_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR54_R1_fastqc.html, result/qc/1_fastqc_raw/AR54_R1_fastqc.zip
+    jobid: 90
+    wildcards: sample=AR54_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:02 2022]
+Finished job 112.
+24 of 122 steps (20%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:02 2022]
+rule fastqc_raw:
+    input: data/AR12_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR12_R2_fastqc.html, result/qc/1_fastqc_raw/AR12_R2_fastqc.zip
+    jobid: 7
+    wildcards: sample=AR12_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:11 2022]
+Finished job 68.
+25 of 122 steps (20%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:11 2022]
+rule fastqc_raw:
+    input: data/AR9_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR9_R2_fastqc.html, result/qc/1_fastqc_raw/AR9_R2_fastqc.zip
+    jobid: 105
+    wildcards: sample=AR9_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:12 2022]
+Finished job 77.
+26 of 122 steps (21%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:12 2022]
+rule fastqc_raw:
+    input: data/AR9_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR9_R1_fastqc.html, result/qc/1_fastqc_raw/AR9_R1_fastqc.zip
+    jobid: 104
+    wildcards: sample=AR9_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:12 2022]
+Finished job 107.
+27 of 122 steps (22%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:12 2022]
+rule fastqc_raw:
+    input: data/AR131_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR131_R1_fastqc.html, result/qc/1_fastqc_raw/AR131_R1_fastqc.zip
+    jobid: 8
+    wildcards: sample=AR131_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:29 2022]
+Finished job 79.
+28 of 122 steps (23%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:29 2022]
+rule fastqc_raw:
+    input: data/AR13_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR13_R2_fastqc.html, result/qc/1_fastqc_raw/AR13_R2_fastqc.zip
+    jobid: 25
+    wildcards: sample=AR13_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:40 2022]
+Finished job 19.
+29 of 122 steps (24%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:40 2022]
+rule fastqc_raw:
+    input: data/AR132_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR132_R1_fastqc.html, result/qc/1_fastqc_raw/AR132_R1_fastqc.zip
+    jobid: 10
+    wildcards: sample=AR132_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:45 2022]
+Finished job 69.
+30 of 122 steps (25%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:45 2022]
+rule fastqc_raw:
+    input: data/AR17_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR17_R2_fastqc.html, result/qc/1_fastqc_raw/AR17_R2_fastqc.zip
+    jobid: 45
+    wildcards: sample=AR17_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:42:57 2022]
+Finished job 113.
+31 of 122 steps (25%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:42:57 2022]
+rule fastqc_raw:
+    input: data/IL27_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL27_R2_fastqc.html, result/qc/1_fastqc_raw/IL27_R2_fastqc.zip
+    jobid: 119
+    wildcards: sample=IL27_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:43:51 2022]
+Finished job 71.
+32 of 122 steps (26%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:43:51 2022]
+rule fastqc_raw:
+    input: data/AR138_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR138_R2_fastqc.html, result/qc/1_fastqc_raw/AR138_R2_fastqc.zip
+    jobid: 23
+    wildcards: sample=AR138_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:02 2022]
+Finished job 92.
+33 of 122 steps (27%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:02 2022]
+rule fastqc_raw:
+    input: data/AR20_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR20_R2_fastqc.html, result/qc/1_fastqc_raw/AR20_R2_fastqc.zip
+    jobid: 53
+    wildcards: sample=AR20_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:14 2022]
+Finished job 98.
+34 of 122 steps (28%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:14 2022]
+rule fastqc_raw:
+    input: data/AR30_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR30_R1_fastqc.html, result/qc/1_fastqc_raw/AR30_R1_fastqc.zip
+    jobid: 74
+    wildcards: sample=AR30_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:16 2022]
+Finished job 64.
+35 of 122 steps (29%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:16 2022]
+rule fastqc_raw:
+    input: data/AR33_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR33_R1_fastqc.html, result/qc/1_fastqc_raw/AR33_R1_fastqc.zip
+    jobid: 76
+    wildcards: sample=AR33_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:27 2022]
+Finished job 93.
+36 of 122 steps (30%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:28 2022]
+rule fastqc_raw:
+    input: data/AR23_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR23_R2_fastqc.html, result/qc/1_fastqc_raw/AR23_R2_fastqc.zip
+    jobid: 59
+    wildcards: sample=AR23_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:29 2022]
+Finished job 110.
+37 of 122 steps (30%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:29 2022]
+rule fastqc_raw:
+    input: data/AR10_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR10_R1_fastqc.html, result/qc/1_fastqc_raw/AR10_R1_fastqc.zip
+    jobid: 2
+    wildcards: sample=AR10_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:33 2022]
+Finished job 65.
+38 of 122 steps (31%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:33 2022]
+rule fastqc_raw:
+    input: data/AR53_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR53_R2_fastqc.html, result/qc/1_fastqc_raw/AR53_R2_fastqc.zip
+    jobid: 89
+    wildcards: sample=AR53_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:44:59 2022]
+Finished job 114.
+39 of 122 steps (32%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:44:59 2022]
+rule fastqc_raw:
+    input: data/AR153_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR153_R2_fastqc.html, result/qc/1_fastqc_raw/AR153_R2_fastqc.zip
+    jobid: 31
+    wildcards: sample=AR153_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:45:17 2022]
+Finished job 99.
+40 of 122 steps (33%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:45:17 2022]
+rule fastqc_raw:
+    input: data/AR134_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR134_R1_fastqc.html, result/qc/1_fastqc_raw/AR134_R1_fastqc.zip
+    jobid: 14
+    wildcards: sample=AR134_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:46:13 2022]
+Finished job 100.
+41 of 122 steps (34%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:46:13 2022]
+rule fastqc_raw:
+    input: data/AR54_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR54_R2_fastqc.html, result/qc/1_fastqc_raw/AR54_R2_fastqc.zip
+    jobid: 91
+    wildcards: sample=AR54_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:50:28 2022]
+Finished job 80.
+42 of 122 steps (34%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:50:28 2022]
+rule fastqc_raw:
+    input: data/AR152_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR152_R2_fastqc.html, result/qc/1_fastqc_raw/AR152_R2_fastqc.zip
+    jobid: 29
+    wildcards: sample=AR152_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:54:59 2022]
+Finished job 58.
+43 of 122 steps (35%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:55:00 2022]
+rule fastqc_raw:
+    input: data/AR135_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR135_R1_fastqc.html, result/qc/1_fastqc_raw/AR135_R1_fastqc.zip
+    jobid: 16
+    wildcards: sample=AR135_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:55:19 2022]
+Finished job 88.
+44 of 122 steps (36%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:55:19 2022]
+rule fastqc_raw:
+    input: data/AR21_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR21_R2_fastqc.html, result/qc/1_fastqc_raw/AR21_R2_fastqc.zip
+    jobid: 55
+    wildcards: sample=AR21_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:55:49 2022]
+Finished job 36.
+45 of 122 steps (37%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:55:49 2022]
+rule fastqc_raw:
+    input: data/AR40_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR40_R2_fastqc.html, result/qc/1_fastqc_raw/AR40_R2_fastqc.zip
+    jobid: 85
+    wildcards: sample=AR40_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:56:29 2022]
+Finished job 60.
+46 of 122 steps (38%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:56:29 2022]
+rule fastqc_raw:
+    input: data/AR19_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR19_R1_fastqc.html, result/qc/1_fastqc_raw/AR19_R1_fastqc.zip
+    jobid: 48
+    wildcards: sample=AR19_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:56:45 2022]
+Finished job 66.
+47 of 122 steps (39%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:56:45 2022]
+rule fastqc_raw:
+    input: data/AR4_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR4_R1_fastqc.html, result/qc/1_fastqc_raw/AR4_R1_fastqc.zip
+    jobid: 86
+    wildcards: sample=AR4_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:56:48 2022]
+Finished job 82.
+48 of 122 steps (39%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:56:48 2022]
+rule fastqc_raw:
+    input: data/AR7_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR7_R2_fastqc.html, result/qc/1_fastqc_raw/AR7_R2_fastqc.zip
+    jobid: 101
+    wildcards: sample=AR7_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:56:55 2022]
+Finished job 44.
+49 of 122 steps (40%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:56:55 2022]
+rule fastqc_raw:
+    input: data/AR22_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR22_R1_fastqc.html, result/qc/1_fastqc_raw/AR22_R1_fastqc.zip
+    jobid: 56
+    wildcards: sample=AR22_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:04 2022]
+Finished job 104.
+50 of 122 steps (41%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:04 2022]
+rule fastqc_raw:
+    input: data/AR15_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR15_R2_fastqc.html, result/qc/1_fastqc_raw/AR15_R2_fastqc.zip
+    jobid: 41
+    wildcards: sample=AR15_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:15 2022]
+Finished job 10.
+51 of 122 steps (42%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:15 2022]
+rule fastqc_raw:
+    input: data/IL25_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL25_R2_fastqc.html, result/qc/1_fastqc_raw/IL25_R2_fastqc.zip
+    jobid: 115
+    wildcards: sample=IL25_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:15 2022]
+Finished job 30.
+52 of 122 steps (43%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:16 2022]
+rule fastqc_raw:
+    input: data/AR19_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR19_R2_fastqc.html, result/qc/1_fastqc_raw/AR19_R2_fastqc.zip
+    jobid: 49
+    wildcards: sample=AR19_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:17 2022]
+Finished job 105.
+53 of 122 steps (43%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:17 2022]
+rule fastqc_raw:
+    input: data/AR22_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR22_R2_fastqc.html, result/qc/1_fastqc_raw/AR22_R2_fastqc.zip
+    jobid: 57
+    wildcards: sample=AR22_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:26 2022]
+Finished job 67.
+54 of 122 steps (44%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:26 2022]
+rule fastqc_raw:
+    input: data/AR4_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR4_R2_fastqc.html, result/qc/1_fastqc_raw/AR4_R2_fastqc.zip
+    jobid: 87
+    wildcards: sample=AR4_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:57:27 2022]
+Finished job 20.
+55 of 122 steps (45%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:57:27 2022]
+rule fastqc_raw:
+    input: data/AR8_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR8_R1_fastqc.html, result/qc/1_fastqc_raw/AR8_R1_fastqc.zip
+    jobid: 102
+    wildcards: sample=AR8_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:10 2022]
+Finished job 43.
+56 of 122 steps (46%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:10 2022]
+rule fastqc_raw:
+    input: data/AR14_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR14_R2_fastqc.html, result/qc/1_fastqc_raw/AR14_R2_fastqc.zip
+    jobid: 27
+    wildcards: sample=AR14_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:33 2022]
+Finished job 7.
+57 of 122 steps (47%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:33 2022]
+rule fastqc_raw:
+    input: data/AR133_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR133_R1_fastqc.html, result/qc/1_fastqc_raw/AR133_R1_fastqc.zip
+    jobid: 12
+    wildcards: sample=AR133_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:34 2022]
+Finished job 118.
+58 of 122 steps (48%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:34 2022]
+rule fastqc_raw:
+    input: data/AR2_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR2_R1_fastqc.html, result/qc/1_fastqc_raw/AR2_R1_fastqc.zip
+    jobid: 72
+    wildcards: sample=AR2_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:34 2022]
+Finished job 25.
+59 of 122 steps (48%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:34 2022]
+rule fastqc_raw:
+    input: data/IL21_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL21_R1_fastqc.html, result/qc/1_fastqc_raw/IL21_R1_fastqc.zip
+    jobid: 106
+    wildcards: sample=IL21_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:41 2022]
+Finished job 8.
+60 of 122 steps (49%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:42 2022]
+rule fastqc_raw:
+    input: data/AR29_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR29_R1_fastqc.html, result/qc/1_fastqc_raw/AR29_R1_fastqc.zip
+    jobid: 70
+    wildcards: sample=AR29_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:43 2022]
+Finished job 21.
+61 of 122 steps (50%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:43 2022]
+rule fastqc_raw:
+    input: data/AR135_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR135_R2_fastqc.html, result/qc/1_fastqc_raw/AR135_R2_fastqc.zip
+    jobid: 17
+    wildcards: sample=AR135_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:50 2022]
+Finished job 37.
+62 of 122 steps (51%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:50 2022]
+rule fastqc_raw:
+    input: data/AR152_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR152_R1_fastqc.html, result/qc/1_fastqc_raw/AR152_R1_fastqc.zip
+    jobid: 28
+    wildcards: sample=AR152_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:52 2022]
+Finished job 45.
+63 of 122 steps (52%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:52 2022]
+rule fastqc_raw:
+    input: data/IL26_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL26_R2_fastqc.html, result/qc/1_fastqc_raw/IL26_R2_fastqc.zip
+    jobid: 117
+    wildcards: sample=IL26_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:58:58 2022]
+Finished job 34.
+64 of 122 steps (52%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:58:58 2022]
+rule fastqc_raw:
+    input: data/AR18_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR18_R2_fastqc.html, result/qc/1_fastqc_raw/AR18_R2_fastqc.zip
+    jobid: 47
+    wildcards: sample=AR18_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:59:11 2022]
+Finished job 2.
+65 of 122 steps (53%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:59:11 2022]
+rule fastqc_raw:
+    input: data/IL28_R2.fq.gz
+    output: result/qc/1_fastqc_raw/IL28_R2_fastqc.html, result/qc/1_fastqc_raw/IL28_R2_fastqc.zip
+    jobid: 121
+    wildcards: sample=IL28_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:59:30 2022]
+Finished job 75.
+66 of 122 steps (54%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:59:30 2022]
+rule fastqc_raw:
+    input: data/AR1_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR1_R2_fastqc.html, result/qc/1_fastqc_raw/AR1_R2_fastqc.zip
+    jobid: 51
+    wildcards: sample=AR1_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:59:31 2022]
+Finished job 96.
+67 of 122 steps (55%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:59:31 2022]
+rule configscript:
+    input: scripts/create_config.sh
+    output: result/config.yaml, result/qc/2_fastqc_trim, result/qc/3_flagstat, result/qc/4_picard, result/1_trim, result/2_bam, result/3_bam_filter, result/4_count, result/5_combined
+    jobid: 1
+    resources: tmpdir=/tmp
+
+mkdir: cannot create directory ‘ref’: File exists
+[Wed Dec  7 20:59:35 2022]
+Finished job 1.
+68 of 122 steps (56%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:59:35 2022]
+rule fastqc_raw:
+    input: data/AR133_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR133_R2_fastqc.html, result/qc/1_fastqc_raw/AR133_R2_fastqc.zip
+    jobid: 13
+    wildcards: sample=AR133_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 20:59:48 2022]
+Finished job 35.
+69 of 122 steps (57%) done
+Select jobs to execute...
+
+[Wed Dec  7 20:59:48 2022]
+rule fastqc_raw:
+    input: data/AR21_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR21_R1_fastqc.html, result/qc/1_fastqc_raw/AR21_R1_fastqc.zip
+    jobid: 54
+    wildcards: sample=AR21_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:00:06 2022]
+Finished job 52.
+70 of 122 steps (57%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:00:06 2022]
+rule fastqc_raw:
+    input: data/AR1_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR1_R1_fastqc.html, result/qc/1_fastqc_raw/AR1_R1_fastqc.zip
+    jobid: 50
+    wildcards: sample=AR1_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:00:29 2022]
+Finished job 22.
+71 of 122 steps (58%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:00:29 2022]
+rule fastqc_raw:
+    input: data/IL26_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL26_R1_fastqc.html, result/qc/1_fastqc_raw/IL26_R1_fastqc.zip
+    jobid: 116
+    wildcards: sample=IL26_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:00:35 2022]
+Finished job 59.
+72 of 122 steps (59%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:00:35 2022]
+rule fastqc_raw:
+    input: data/AR16_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR16_R1_fastqc.html, result/qc/1_fastqc_raw/AR16_R1_fastqc.zip
+    jobid: 42
+    wildcards: sample=AR16_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:00:51 2022]
+Finished job 119.
+73 of 122 steps (60%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:00:51 2022]
+rule fastqc_raw:
+    input: data/AR24_R2.fq.gz
+    output: result/qc/1_fastqc_raw/AR24_R2_fastqc.html, result/qc/1_fastqc_raw/AR24_R2_fastqc.zip
+    jobid: 61
+    wildcards: sample=AR24_R2
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:00:59 2022]
+Finished job 89.
+74 of 122 steps (61%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:00:59 2022]
+rule fastqc_raw:
+    input: data/IL28_R1.fq.gz
+    output: result/qc/1_fastqc_raw/IL28_R1_fastqc.html, result/qc/1_fastqc_raw/IL28_R1_fastqc.zip
+    jobid: 120
+    wildcards: sample=IL28_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:01:01 2022]
+Finished job 73.
+75 of 122 steps (61%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:01:01 2022]
+rule fastqc_raw:
+    input: data/AR18_R1.fq.gz
+    output: result/qc/1_fastqc_raw/AR18_R1_fastqc.html, result/qc/1_fastqc_raw/AR18_R1_fastqc.zip
+    jobid: 46
+    wildcards: sample=AR18_R1
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:01:01 2022]
+Finished job 97.
+76 of 122 steps (62%) done
+[Wed Dec  7 21:01:02 2022]
+Finished job 111.
+77 of 122 steps (63%) done
+[Wed Dec  7 21:01:26 2022]
+Finished job 74.
+78 of 122 steps (64%) done
+[Wed Dec  7 21:01:43 2022]
+Finished job 31.
+79 of 122 steps (65%) done
+[Wed Dec  7 21:01:47 2022]
+Finished job 76.
+80 of 122 steps (66%) done
+[Wed Dec  7 21:02:03 2022]
+Finished job 103.
+81 of 122 steps (66%) done
+[Wed Dec  7 21:02:52 2022]
+Finished job 53.
+82 of 122 steps (67%) done
+[Wed Dec  7 21:03:00 2022]
+Finished job 23.
+83 of 122 steps (68%) done
+[Wed Dec  7 21:04:58 2022]
+Finished job 81.
+84 of 122 steps (69%) done
+[Wed Dec  7 21:06:26 2022]
+Finished job 90.
+85 of 122 steps (70%) done
+[Wed Dec  7 21:06:35 2022]
+Finished job 29.
+86 of 122 steps (70%) done
+[Wed Dec  7 21:10:21 2022]
+Finished job 91.
+87 of 122 steps (71%) done
+[Wed Dec  7 21:10:48 2022]
+Finished job 48.
+88 of 122 steps (72%) done
+[Wed Dec  7 21:10:52 2022]
+Finished job 16.
+89 of 122 steps (73%) done
+[Wed Dec  7 21:11:05 2022]
+Finished job 41.
+90 of 122 steps (74%) done
+[Wed Dec  7 21:11:10 2022]
+Finished job 55.
+91 of 122 steps (75%) done
+[Wed Dec  7 21:11:38 2022]
+Finished job 85.
+92 of 122 steps (75%) done
+[Wed Dec  7 21:11:40 2022]
+Finished job 86.
+93 of 122 steps (76%) done
+[Wed Dec  7 21:11:46 2022]
+Finished job 49.
+94 of 122 steps (77%) done
+[Wed Dec  7 21:11:53 2022]
+Finished job 56.
+95 of 122 steps (78%) done
+[Wed Dec  7 21:12:07 2022]
+Finished job 12.
+96 of 122 steps (79%) done
+[Wed Dec  7 21:12:09 2022]
+Finished job 27.
+97 of 122 steps (80%) done
+[Wed Dec  7 21:12:23 2022]
+Finished job 87.
+98 of 122 steps (80%) done
+[Wed Dec  7 21:12:33 2022]
+Finished job 28.
+99 of 122 steps (81%) done
+[Wed Dec  7 21:12:39 2022]
+Finished job 106.
+100 of 122 steps (82%) done
+[Wed Dec  7 21:12:48 2022]
+Finished job 57.
+101 of 122 steps (83%) done
+[Wed Dec  7 21:12:53 2022]
+Finished job 13.
+102 of 122 steps (84%) done
+[Wed Dec  7 21:12:56 2022]
+Finished job 121.
+103 of 122 steps (84%) done
+[Wed Dec  7 21:12:56 2022]
+Finished job 15.
+104 of 122 steps (85%) done
+[Wed Dec  7 21:13:06 2022]
+Finished job 47.
+105 of 122 steps (86%) done
+[Wed Dec  7 21:13:14 2022]
+Finished job 61.
+106 of 122 steps (87%) done
+[Wed Dec  7 21:13:21 2022]
+Finished job 17.
+107 of 122 steps (88%) done
+[Wed Dec  7 21:13:26 2022]
+Finished job 54.
+108 of 122 steps (89%) done
+[Wed Dec  7 21:13:28 2022]
+Finished job 51.
+109 of 122 steps (89%) done
+[Wed Dec  7 21:13:31 2022]
+Finished job 50.
+110 of 122 steps (90%) done
+[Wed Dec  7 21:13:33 2022]
+Finished job 70.
+111 of 122 steps (91%) done
+[Wed Dec  7 21:13:36 2022]
+Finished job 115.
+112 of 122 steps (92%) done
+[Wed Dec  7 21:13:40 2022]
+Finished job 120.
+113 of 122 steps (93%) done
+[Wed Dec  7 21:13:53 2022]
+Finished job 42.
+114 of 122 steps (93%) done
+[Wed Dec  7 21:13:53 2022]
+Finished job 46.
+115 of 122 steps (94%) done
+[Wed Dec  7 21:14:08 2022]
+Finished job 101.
+116 of 122 steps (95%) done
+[Wed Dec  7 21:14:10 2022]
+Finished job 14.
+117 of 122 steps (96%) done
+[Wed Dec  7 21:14:14 2022]
+Finished job 102.
+118 of 122 steps (97%) done
+[Wed Dec  7 21:14:15 2022]
+Finished job 72.
+119 of 122 steps (98%) done
+[Wed Dec  7 21:17:14 2022]
+Finished job 117.
+120 of 122 steps (98%) done
+[Wed Dec  7 21:17:17 2022]
+Finished job 116.
+121 of 122 steps (99%) done
+Select jobs to execute...
+
+[Wed Dec  7 21:17:17 2022]
+localrule all:
+    input: result/config.yaml, result/qc/2_fastqc_trim, result/qc/3_flagstat, result/qc/4_picard, result/1_trim, result/2_bam, result/3_bam_filter, result/4_count, result/5_combined, result/qc/1_fastqc_raw/AR10_R1_fastqc.html, result/qc/1_fastqc_raw/AR10_R2_fastqc.html, result/qc/1_fastqc_raw/AR11_R1_fastqc.html, result/qc/1_fastqc_raw/AR11_R2_fastqc.html, result/qc/1_fastqc_raw/AR12_R1_fastqc.html, result/qc/1_fastqc_raw/AR12_R2_fastqc.html, result/qc/1_fastqc_raw/AR131_R1_fastqc.html, result/qc/1_fastqc_raw/AR131_R2_fastqc.html, result/qc/1_fastqc_raw/AR132_R1_fastqc.html, result/qc/1_fastqc_raw/AR132_R2_fastqc.html, result/qc/1_fastqc_raw/AR133_R1_fastqc.html, result/qc/1_fastqc_raw/AR133_R2_fastqc.html, result/qc/1_fastqc_raw/AR134_R1_fastqc.html, result/qc/1_fastqc_raw/AR134_R2_fastqc.html, result/qc/1_fastqc_raw/AR135_R1_fastqc.html, result/qc/1_fastqc_raw/AR135_R2_fastqc.html, result/qc/1_fastqc_raw/AR136_R1_fastqc.html, result/qc/1_fastqc_raw/AR136_R2_fastqc.html, result/qc/1_fastqc_raw/AR137_R1_fastqc.html, result/qc/1_fastqc_raw/AR137_R2_fastqc.html, result/qc/1_fastqc_raw/AR138_R1_fastqc.html, result/qc/1_fastqc_raw/AR138_R2_fastqc.html, result/qc/1_fastqc_raw/AR13_R1_fastqc.html, result/qc/1_fastqc_raw/AR13_R2_fastqc.html, result/qc/1_fastqc_raw/AR14_R1_fastqc.html, result/qc/1_fastqc_raw/AR14_R2_fastqc.html, result/qc/1_fastqc_raw/AR152_R1_fastqc.html, result/qc/1_fastqc_raw/AR152_R2_fastqc.html, result/qc/1_fastqc_raw/AR153_R1_fastqc.html, result/qc/1_fastqc_raw/AR153_R2_fastqc.html, result/qc/1_fastqc_raw/AR154_R1_fastqc.html, result/qc/1_fastqc_raw/AR154_R2_fastqc.html, result/qc/1_fastqc_raw/AR156_R1_fastqc.html, result/qc/1_fastqc_raw/AR156_R2_fastqc.html, result/qc/1_fastqc_raw/AR157_R1_fastqc.html, result/qc/1_fastqc_raw/AR157_R2_fastqc.html, result/qc/1_fastqc_raw/AR158_R1_fastqc.html, result/qc/1_fastqc_raw/AR158_R2_fastqc.html, result/qc/1_fastqc_raw/AR15_R1_fastqc.html, result/qc/1_fastqc_raw/AR15_R2_fastqc.html, result/qc/1_fastqc_raw/AR16_R1_fastqc.html, result/qc/1_fastqc_raw/AR16_R2_fastqc.html, result/qc/1_fastqc_raw/AR17_R1_fastqc.html, result/qc/1_fastqc_raw/AR17_R2_fastqc.html, result/qc/1_fastqc_raw/AR18_R1_fastqc.html, result/qc/1_fastqc_raw/AR18_R2_fastqc.html, result/qc/1_fastqc_raw/AR19_R1_fastqc.html, result/qc/1_fastqc_raw/AR19_R2_fastqc.html, result/qc/1_fastqc_raw/AR1_R1_fastqc.html, result/qc/1_fastqc_raw/AR1_R2_fastqc.html, result/qc/1_fastqc_raw/AR20_R1_fastqc.html, result/qc/1_fastqc_raw/AR20_R2_fastqc.html, result/qc/1_fastqc_raw/AR21_R1_fastqc.html, result/qc/1_fastqc_raw/AR21_R2_fastqc.html, result/qc/1_fastqc_raw/AR22_R1_fastqc.html, result/qc/1_fastqc_raw/AR22_R2_fastqc.html, result/qc/1_fastqc_raw/AR23_R1_fastqc.html, result/qc/1_fastqc_raw/AR23_R2_fastqc.html, result/qc/1_fastqc_raw/AR24_R1_fastqc.html, result/qc/1_fastqc_raw/AR24_R2_fastqc.html, result/qc/1_fastqc_raw/AR25_R1_fastqc.html, result/qc/1_fastqc_raw/AR25_R2_fastqc.html, result/qc/1_fastqc_raw/AR26_R1_fastqc.html, result/qc/1_fastqc_raw/AR26_R2_fastqc.html, result/qc/1_fastqc_raw/AR27_R1_fastqc.html, result/qc/1_fastqc_raw/AR27_R2_fastqc.html, result/qc/1_fastqc_raw/AR28_R1_fastqc.html, result/qc/1_fastqc_raw/AR28_R2_fastqc.html, result/qc/1_fastqc_raw/AR29_R1_fastqc.html, result/qc/1_fastqc_raw/AR29_R2_fastqc.html, result/qc/1_fastqc_raw/AR2_R1_fastqc.html, result/qc/1_fastqc_raw/AR2_R2_fastqc.html, result/qc/1_fastqc_raw/AR30_R1_fastqc.html, result/qc/1_fastqc_raw/AR30_R2_fastqc.html, result/qc/1_fastqc_raw/AR33_R1_fastqc.html, result/qc/1_fastqc_raw/AR33_R2_fastqc.html, result/qc/1_fastqc_raw/AR34_R1_fastqc.html, result/qc/1_fastqc_raw/AR34_R2_fastqc.html, result/qc/1_fastqc_raw/AR39_R1_fastqc.html, result/qc/1_fastqc_raw/AR39_R2_fastqc.html, result/qc/1_fastqc_raw/AR3_R1_fastqc.html, result/qc/1_fastqc_raw/AR3_R2_fastqc.html, result/qc/1_fastqc_raw/AR40_R1_fastqc.html, result/qc/1_fastqc_raw/AR40_R2_fastqc.html, result/qc/1_fastqc_raw/AR4_R1_fastqc.html, result/qc/1_fastqc_raw/AR4_R2_fastqc.html, result/qc/1_fastqc_raw/AR53_R1_fastqc.html, result/qc/1_fastqc_raw/AR53_R2_fastqc.html, result/qc/1_fastqc_raw/AR54_R1_fastqc.html, result/qc/1_fastqc_raw/AR54_R2_fastqc.html, result/qc/1_fastqc_raw/AR59_R1_fastqc.html, result/qc/1_fastqc_raw/AR59_R2_fastqc.html, result/qc/1_fastqc_raw/AR5_R1_fastqc.html, result/qc/1_fastqc_raw/AR5_R2_fastqc.html, result/qc/1_fastqc_raw/AR60_R1_fastqc.html, result/qc/1_fastqc_raw/AR60_R2_fastqc.html, result/qc/1_fastqc_raw/AR6_R1_fastqc.html, result/qc/1_fastqc_raw/AR6_R2_fastqc.html, result/qc/1_fastqc_raw/AR7_R1_fastqc.html, result/qc/1_fastqc_raw/AR7_R2_fastqc.html, result/qc/1_fastqc_raw/AR8_R1_fastqc.html, result/qc/1_fastqc_raw/AR8_R2_fastqc.html, result/qc/1_fastqc_raw/AR9_R1_fastqc.html, result/qc/1_fastqc_raw/AR9_R2_fastqc.html, result/qc/1_fastqc_raw/IL21_R1_fastqc.html, result/qc/1_fastqc_raw/IL21_R2_fastqc.html, result/qc/1_fastqc_raw/IL22_R1_fastqc.html, result/qc/1_fastqc_raw/IL22_R2_fastqc.html, result/qc/1_fastqc_raw/IL23_R1_fastqc.html, result/qc/1_fastqc_raw/IL23_R2_fastqc.html, result/qc/1_fastqc_raw/IL24_R1_fastqc.html, result/qc/1_fastqc_raw/IL24_R2_fastqc.html, result/qc/1_fastqc_raw/IL25_R1_fastqc.html, result/qc/1_fastqc_raw/IL25_R2_fastqc.html, result/qc/1_fastqc_raw/IL26_R1_fastqc.html, result/qc/1_fastqc_raw/IL26_R2_fastqc.html, result/qc/1_fastqc_raw/IL27_R1_fastqc.html, result/qc/1_fastqc_raw/IL27_R2_fastqc.html, result/qc/1_fastqc_raw/IL28_R1_fastqc.html, result/qc/1_fastqc_raw/IL28_R2_fastqc.html, result/qc/1_fastqc_raw/AR10_R1_fastqc.zip, result/qc/1_fastqc_raw/AR10_R2_fastqc.zip, result/qc/1_fastqc_raw/AR11_R1_fastqc.zip, result/qc/1_fastqc_raw/AR11_R2_fastqc.zip, result/qc/1_fastqc_raw/AR12_R1_fastqc.zip, result/qc/1_fastqc_raw/AR12_R2_fastqc.zip, result/qc/1_fastqc_raw/AR131_R1_fastqc.zip, result/qc/1_fastqc_raw/AR131_R2_fastqc.zip, result/qc/1_fastqc_raw/AR132_R1_fastqc.zip, result/qc/1_fastqc_raw/AR132_R2_fastqc.zip, result/qc/1_fastqc_raw/AR133_R1_fastqc.zip, result/qc/1_fastqc_raw/AR133_R2_fastqc.zip, result/qc/1_fastqc_raw/AR134_R1_fastqc.zip, result/qc/1_fastqc_raw/AR134_R2_fastqc.zip, result/qc/1_fastqc_raw/AR135_R1_fastqc.zip, result/qc/1_fastqc_raw/AR135_R2_fastqc.zip, result/qc/1_fastqc_raw/AR136_R1_fastqc.zip, result/qc/1_fastqc_raw/AR136_R2_fastqc.zip, result/qc/1_fastqc_raw/AR137_R1_fastqc.zip, result/qc/1_fastqc_raw/AR137_R2_fastqc.zip, result/qc/1_fastqc_raw/AR138_R1_fastqc.zip, result/qc/1_fastqc_raw/AR138_R2_fastqc.zip, result/qc/1_fastqc_raw/AR13_R1_fastqc.zip, result/qc/1_fastqc_raw/AR13_R2_fastqc.zip, result/qc/1_fastqc_raw/AR14_R1_fastqc.zip, result/qc/1_fastqc_raw/AR14_R2_fastqc.zip, result/qc/1_fastqc_raw/AR152_R1_fastqc.zip, result/qc/1_fastqc_raw/AR152_R2_fastqc.zip, result/qc/1_fastqc_raw/AR153_R1_fastqc.zip, result/qc/1_fastqc_raw/AR153_R2_fastqc.zip, result/qc/1_fastqc_raw/AR154_R1_fastqc.zip, result/qc/1_fastqc_raw/AR154_R2_fastqc.zip, result/qc/1_fastqc_raw/AR156_R1_fastqc.zip, result/qc/1_fastqc_raw/AR156_R2_fastqc.zip, result/qc/1_fastqc_raw/AR157_R1_fastqc.zip, result/qc/1_fastqc_raw/AR157_R2_fastqc.zip, result/qc/1_fastqc_raw/AR158_R1_fastqc.zip, result/qc/1_fastqc_raw/AR158_R2_fastqc.zip, result/qc/1_fastqc_raw/AR15_R1_fastqc.zip, result/qc/1_fastqc_raw/AR15_R2_fastqc.zip, result/qc/1_fastqc_raw/AR16_R1_fastqc.zip, result/qc/1_fastqc_raw/AR16_R2_fastqc.zip, result/qc/1_fastqc_raw/AR17_R1_fastqc.zip, result/qc/1_fastqc_raw/AR17_R2_fastqc.zip, result/qc/1_fastqc_raw/AR18_R1_fastqc.zip, result/qc/1_fastqc_raw/AR18_R2_fastqc.zip, result/qc/1_fastqc_raw/AR19_R1_fastqc.zip, result/qc/1_fastqc_raw/AR19_R2_fastqc.zip, result/qc/1_fastqc_raw/AR1_R1_fastqc.zip, result/qc/1_fastqc_raw/AR1_R2_fastqc.zip, result/qc/1_fastqc_raw/AR20_R1_fastqc.zip, result/qc/1_fastqc_raw/AR20_R2_fastqc.zip, result/qc/1_fastqc_raw/AR21_R1_fastqc.zip, result/qc/1_fastqc_raw/AR21_R2_fastqc.zip, result/qc/1_fastqc_raw/AR22_R1_fastqc.zip, result/qc/1_fastqc_raw/AR22_R2_fastqc.zip, result/qc/1_fastqc_raw/AR23_R1_fastqc.zip, result/qc/1_fastqc_raw/AR23_R2_fastqc.zip, result/qc/1_fastqc_raw/AR24_R1_fastqc.zip, result/qc/1_fastqc_raw/AR24_R2_fastqc.zip, result/qc/1_fastqc_raw/AR25_R1_fastqc.zip, result/qc/1_fastqc_raw/AR25_R2_fastqc.zip, result/qc/1_fastqc_raw/AR26_R1_fastqc.zip, result/qc/1_fastqc_raw/AR26_R2_fastqc.zip, result/qc/1_fastqc_raw/AR27_R1_fastqc.zip, result/qc/1_fastqc_raw/AR27_R2_fastqc.zip, result/qc/1_fastqc_raw/AR28_R1_fastqc.zip, result/qc/1_fastqc_raw/AR28_R2_fastqc.zip, result/qc/1_fastqc_raw/AR29_R1_fastqc.zip, result/qc/1_fastqc_raw/AR29_R2_fastqc.zip, result/qc/1_fastqc_raw/AR2_R1_fastqc.zip, result/qc/1_fastqc_raw/AR2_R2_fastqc.zip, result/qc/1_fastqc_raw/AR30_R1_fastqc.zip, result/qc/1_fastqc_raw/AR30_R2_fastqc.zip, result/qc/1_fastqc_raw/AR33_R1_fastqc.zip, result/qc/1_fastqc_raw/AR33_R2_fastqc.zip, result/qc/1_fastqc_raw/AR34_R1_fastqc.zip, result/qc/1_fastqc_raw/AR34_R2_fastqc.zip, result/qc/1_fastqc_raw/AR39_R1_fastqc.zip, result/qc/1_fastqc_raw/AR39_R2_fastqc.zip, result/qc/1_fastqc_raw/AR3_R1_fastqc.zip, result/qc/1_fastqc_raw/AR3_R2_fastqc.zip, result/qc/1_fastqc_raw/AR40_R1_fastqc.zip, result/qc/1_fastqc_raw/AR40_R2_fastqc.zip, result/qc/1_fastqc_raw/AR4_R1_fastqc.zip, result/qc/1_fastqc_raw/AR4_R2_fastqc.zip, result/qc/1_fastqc_raw/AR53_R1_fastqc.zip, result/qc/1_fastqc_raw/AR53_R2_fastqc.zip, result/qc/1_fastqc_raw/AR54_R1_fastqc.zip, result/qc/1_fastqc_raw/AR54_R2_fastqc.zip, result/qc/1_fastqc_raw/AR59_R1_fastqc.zip, result/qc/1_fastqc_raw/AR59_R2_fastqc.zip, result/qc/1_fastqc_raw/AR5_R1_fastqc.zip, result/qc/1_fastqc_raw/AR5_R2_fastqc.zip, result/qc/1_fastqc_raw/AR60_R1_fastqc.zip, result/qc/1_fastqc_raw/AR60_R2_fastqc.zip, result/qc/1_fastqc_raw/AR6_R1_fastqc.zip, result/qc/1_fastqc_raw/AR6_R2_fastqc.zip, result/qc/1_fastqc_raw/AR7_R1_fastqc.zip, result/qc/1_fastqc_raw/AR7_R2_fastqc.zip, result/qc/1_fastqc_raw/AR8_R1_fastqc.zip, result/qc/1_fastqc_raw/AR8_R2_fastqc.zip, result/qc/1_fastqc_raw/AR9_R1_fastqc.zip, result/qc/1_fastqc_raw/AR9_R2_fastqc.zip, result/qc/1_fastqc_raw/IL21_R1_fastqc.zip, result/qc/1_fastqc_raw/IL21_R2_fastqc.zip, result/qc/1_fastqc_raw/IL22_R1_fastqc.zip, result/qc/1_fastqc_raw/IL22_R2_fastqc.zip, result/qc/1_fastqc_raw/IL23_R1_fastqc.zip, result/qc/1_fastqc_raw/IL23_R2_fastqc.zip, result/qc/1_fastqc_raw/IL24_R1_fastqc.zip, result/qc/1_fastqc_raw/IL24_R2_fastqc.zip, result/qc/1_fastqc_raw/IL25_R1_fastqc.zip, result/qc/1_fastqc_raw/IL25_R2_fastqc.zip, result/qc/1_fastqc_raw/IL26_R1_fastqc.zip, result/qc/1_fastqc_raw/IL26_R2_fastqc.zip, result/qc/1_fastqc_raw/IL27_R1_fastqc.zip, result/qc/1_fastqc_raw/IL27_R2_fastqc.zip, result/qc/1_fastqc_raw/IL28_R1_fastqc.zip, result/qc/1_fastqc_raw/IL28_R2_fastqc.zip
+    jobid: 0
+    resources: tmpdir=/tmp
+
+[Wed Dec  7 21:17:17 2022]
+Finished job 0.
+122 of 122 steps (100%) done
+Complete log: /home/ec2-user/SEAsnake/.snakemake/log/2022-12-07T202328.438700.snakemake.log
